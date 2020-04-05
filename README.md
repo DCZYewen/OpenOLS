@@ -69,7 +69,7 @@ This project is capable under MIT Lisence.
 ## 管理员
 
 进入门户`https://site.com`显示登录界面，有两个输入框，用户名，密码，三个选择可选 `学生 教师 管理员`。
-老师正常登录，被重定向到`https://site.com/administrator_area`能看见各个年级，增添人员，删除人员，管理资源（全部）。
+老师正常登录，被重定向到`https://site.com/administrator_area`能看见各个年级，增添人员，删除人员，管理资源（全部），同时应该有批量删除，批量导入csv,批量导出csv的功能。
 
 
 ## Data Structure
