@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 app = FastAPI()
 
 #The officail sample of FastAPI
@@ -16,4 +17,6 @@ def root():
 def read_item(username: int, password: str, time_stamp: int): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
     user_information = {"username": username,"password": password,"time_stamp":time_stamp}
     return user_information
+
+
 

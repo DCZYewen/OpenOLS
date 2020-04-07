@@ -1,0 +1,7 @@
+print("CREATE TABLE USER \
+(USER_ID INT PRIMARY KEY     NOT NULL,\
+NAME           TEXT    NOT NULL,\
+CLASS          INT     NOT NULL,\
+CHAT_ID        INT     NOT NULL,\
+PASSWD         TEXT    NOT NULL,\
+IS_ONLINE      INT     NOT NULL);")
