@@ -25,6 +25,8 @@ This project is capable under MIT Lisence.
     弹幕
 
     防止挂机
+       
+       非活动标签页时暂停播放
 
 6.实时视频
 
@@ -33,6 +35,10 @@ This project is capable under MIT Lisence.
     直播回看  
 
     课堂内教师同学等实时互动
+    
+    防止挂机
+    
+        建立学生在线统计表，离线时黑色，非活动标签页时红色，挂机时黄色（判断机制？），正常时绿色
 
     直播模式选择
 
