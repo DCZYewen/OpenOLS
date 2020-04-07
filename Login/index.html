@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>请登录</title>
+        <link rel="stylesheet" type="text/css" href="css/login.css"/>
+        <script type="text/javascript">
+            function login() {
+                var username = document.getElementById("username");
+                var pass = document.getElementById("password");
+                if (username.value == "") {
+                    alert("请输入用户名");
+                } else if (pass.value  == "") {
+                    alert("请输入密码");
+                } else {
+                    var myDate = new Date();
+                    var Sec = myDate.getSeconds(); 
+                    var encrypt_passwd = window.btoa(Sec + pass.value + Sec);
+                    var url = window.location.origin + ':8000/login/?username=' + username.value + '&password=' + encrypt_passwd + '&time=' + Sec;
+                    let response = fetch(url);
+                    alert(url)
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="login_wrapper">
+            <p><label class="label_input">用户名&nbsp&nbsp</label><input type="text" id="username" class="text_field"/></p>
+            <p><label class="label_input">密&nbsp&nbsp&nbsp&nbsp码&nbsp&nbsp</label><input type="text" id="password" class="text_field"/></p>
+            <input type="button" name="button" id="btn_login" value="提交" onclick="login();"/>
+        </div>
+    </body>
+</html>
