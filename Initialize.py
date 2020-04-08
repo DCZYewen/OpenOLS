@@ -6,13 +6,16 @@ cur = conn.cursor()
 
 cur.execute('''CREATE TABLE USERS (USER_ID        INT     NOT NULL,
 NAME           TEXT    NOT NULL,
+GRADE          INT     NOT NULL,
 CLASS          INT     NOT NULL,
 CHAT_ID        INT     NOT NULL,
 PASSWD         TEXT    NOT NULL,
-IS_ONLINE      INT     NOT NULL,
+IS_ONLINE      BOOLEAN NOT NULL,
+AUTH           TEXT    NOT NULL,
+ACCOUNT        TEXT    NOT NULL,
 PRIMARY KEY(USER_ID));''')
 print("Table USERS created successfully")
-#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH 
+#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
 
 cur.execute("CREATE TABLE COURSE\
         (COURSE_ID INT PRIMARY KEY NOT NULL,\

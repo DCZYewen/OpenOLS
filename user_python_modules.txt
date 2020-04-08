@@ -1,0 +1,5 @@
+pycryptodome
+psycopg2
+fastapi
+uvicorn
+virtualenv

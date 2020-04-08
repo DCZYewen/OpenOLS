@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+import base64
+from Crypto.Cipher import AES
 import psycopg2
 import sys
 import pytz
 from datetime import datetime
+import site_settings
 
 #All constants declaration
 tz = pytz.timezone('Asia/Shanghai')
@@ -27,4 +30,14 @@ async def root():
 async def read_item(username: int, password: str, time: int): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
     user_information = {"username": username,"password": password,"time":time}
     return user_information
+    #进入登录验证部分
+    real_pass = base64.b64decode(password,time)
 
+def get_real_pass(password,time):
+    decode_string = base64.b64decode(password)
+    i = len(decode_string)
+    if time < 10 :
+        real_pass = decode_string[1:i-1]
+    else :
+        real_pass = decode_string[2:i-2]
+    return real_pass
