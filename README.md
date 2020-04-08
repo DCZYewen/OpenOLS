@@ -24,6 +24,8 @@ This project is capable under MIT Lisence.
 
     弹幕
 
+    显示观看进度，禁止拖拽进度条到观看进度以后的位置
+
     防止挂机
        
        非活动标签页时暂停播放

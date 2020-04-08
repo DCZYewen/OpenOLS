@@ -4,7 +4,7 @@ body {
     background-repeat: no-repeat;
 }
 #login_wrapper {
-    width: 400px;
+    width: 320px;
     height: 260px;
     padding: 13px;
  
@@ -14,9 +14,9 @@ body {
     margin-left: -200px;
     margin-top: -200px;
  
-    background-color: rgba(62, 169, 240, 0.5);
- 
-    border-radius: 10px;
+    background-color: rgba(228, 228, 228, 0.5);
+    box-shadow: 0 16px 24px 2px rgba(29,17,51,.04),0 6px 32px 4px rgba(9,32,77,.12), 0 8px 12px -5px rgba(29,17,51,.12);
+    border-radius: 8px;
     text-align: center;
 }
 
@@ -27,8 +27,7 @@ body {
     height: 28px;
     line-height: 28px;
     text-align: center;
- 
-    color: white;
+    color: rgb(15, 15, 15);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -36,25 +35,60 @@ body {
 }
 
 .text_field {
-    width: 278px;
+    width: 210px;
     height: 28px;
+    padding:.5em 20px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    margin-top:12px;
     border: 0;
 }
 
+/* General Buttons */
 #btn_login {
-    font-size: 24px;
-    width: 200px;
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
- 
-    color: white;
-    background-color: #3BD9FF;
-    border-radius: 6px;
-    border: 0;
-    margin: auto;
-}
+    width: 130px;
+    height: 40px;
+    background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%); /* W3C */
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    border-bottom: 4px solid #2b8bc6;
+    color: #fbfbfb;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    font-size: 15px;
+    text-align: left;
+    text-indent: 5px;
+    box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+    cursor: pointer;
+    margin-top:20px;
+  
+  /* Just for presentation */  
+    display: block;
+    margin:20px auto;/* margin-left 与 margin-right 设置为 auto */
+  }
+#btn_login:active {
+    box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
+    top: 1px;
+  }
+  
+#btn_login:after {
+    content: "";
+    width: 0;
+    height: 0;
+    display: block;
+    border-top: 20px solid #187dbc;
+    border-bottom: 20px solid #187dbc;
+    border-left: 16px solid transparent;
+    border-right: 20px solid #187dbc;
+    position: absolute;
+    opacity: 0.6; 
+    right: 0;
+    top: 0;
+    border-radius: 0 5px 5px 0;  
+  }
+  
+  /* Button pointing left */
