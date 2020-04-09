@@ -12,7 +12,7 @@ tz = pytz.timezone('Asia/Shanghai')
 BJ_Time = datetime.now(tz)
 site_url = "http://site.com"
 site_domain_mane = "site.com"
-
+aes_key = site_settings.aes_key
 
 
 #start the main apai loop
@@ -31,8 +31,12 @@ async def read_item(username: int, password: str, time: int): #这里是登录AP
     user_information = {"username": username,"password": password,"time":time}
     return user_information
     #进入登录验证部分
-    real_pass = base64.b64decode(password,time)
+    real_pass = get_real_pass(password,time)
+    encrypted_pass = encrypt_oracle(aes_key,read_pass)
 
+
+
+##This for encryption and so on .
 def get_real_pass(password,time):
     decode_string = base64.b64decode(password)
     i = len(decode_string)
@@ -41,3 +45,30 @@ def get_real_pass(password,time):
     else :
         real_pass = decode_string[2:i-2]
     return real_pass
+
+
+
+
+#This is for AES password encryption and decryption
+def add_to_16(value):
+    while len(value) % 16 != 0:
+        value += '\0'
+    return str.encode(value)  # 返回bytes
+
+def encrypt_oracle(key,password):
+    # 初始化加密器
+    aes = AES.new(add_to_16(key), AES.MODE_ECB)
+    #进行aes加密
+    encrypt_aes = aes.encrypt(add_to_16(password))
+    #用base64转成字符串形式
+    encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
+    return encrypted_text
+
+def decrypt_oralce(key,encrypted_text):
+    aes = AES.new(add_to_16(key), AES.MODE_ECB)
+    #优先逆向解密base64成bytes
+    base64_decrypted = base64.decodebytes(encrypted_text.encode(encoding='utf-8'))
+    #执行解密密并转码返回str
+    decrypted_text = str(aes.decrypt(base64_decrypted),encoding='utf-8').replace('\0','') 
+    return(decrypted_text)
+
