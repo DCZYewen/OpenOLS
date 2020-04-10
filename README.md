@@ -53,6 +53,8 @@ This project is capable under MIT Lisence.
 
     包括题型：单选，多选，填空，简答。由老师设置题目，客观题自动判分，主观题手动判分。
 
+    禁止复制网页文字，如果试图复制，弹窗或将复制的文字替换为“警告”
+
 ## Statements of How to achieve
 
 1.前后端分离 前端使用H5 CSS HTML构建
