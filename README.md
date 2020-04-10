@@ -29,6 +29,8 @@ This project is capable under MIT Lisence.
     防止挂机
        
        非活动标签页时暂停播放
+       
+    分为必修和选修
 
 6.实时视频
 
@@ -46,6 +48,10 @@ This project is capable under MIT Lisence.
 
         --老师用手机直播，直推摄像头画面
         --老师用PC直播，采集摄像头和板书（PPT之类
+        
+7.测试
+
+    包括题型：单选，多选，填空，简答。由老师设置题目，客观题自动判分，主观题手动判分。
 
 ## Statements of How to achieve
 
