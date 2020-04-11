@@ -5,31 +5,8 @@
         <meta http-equiv="Access-Control-Allow-Origin" content="*">
         <title>请登录</title>
         <link rel="stylesheet" type="text/css" href="css/login.css"/>
-        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js">
-        </script>
-        <script type="text/javascript">
-            function login() {
-                var username = document.getElementById("username");
-                var pass = document.getElementById("password");
-                if (username.value == "") {
-                    alert("请输入用户名");
-                } else if (pass.value  == "") {
-                    alert("请输入密码");
-                } else {
-                    var myDate = new Date();
-                    var Sec = myDate.getSeconds(); 
-                    var encrypt_passwd = window.btoa(Sec + pass.value + Sec);
-                    var url = window.location.origin + ':8080/login/?username=' + username.value + '&password=' + encrypt_passwd + '&time=' + Sec;
-                    fetch(url)
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(myJson) {
-                            console.log(myJson);
-                        });
-                }
-            }
-        </script>
+        <script src="./js/jquery-1.8.0.js"></script>
+        <script src="./js/main.js"></script>
     </head>
     <body>
         <div id="login_wrapper">

@@ -3,9 +3,11 @@ import base64
 from Crypto.Cipher import AES
 import psycopg2
 import sys
+import string
 import pytz
 from datetime import datetime
 import site_settings
+import random
 
 #All constants declaration
 tz = pytz.timezone('Asia/Shanghai')
@@ -18,6 +20,7 @@ html = site_settings.html
 #program startups
 app = FastAPI()
 conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+cur = conn.cursor()
 
 
 @app.get("/")#This is for main page
@@ -33,12 +36,16 @@ async def root():
     return("status" , "OK")
 
 @app.get("/login/")
-async def read_item(username: int, password: str, time: int): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
-    user_information = {"username": username,"password": password,"time":time}
-    return user_information
+async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
+    user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
     encrypted_pass = encrypt_oracle(aes_key,real_pass)
+    sql = '''SELECT ACCOUNT , PASSWD FROM USERS WHERE ACCOUNT = ''' + "'" + username + "'" +  ''' AND PASSWD = ''' + "'" + encrypted_pass + "'" + ''';'''
+    print(sql)
+    cur.execute(sql)
+    a = cur.fetchone()
+    return a
 
 
 
@@ -50,11 +57,11 @@ async def read_item(username: int, password: str, time: int): #这里是登录AP
 def get_real_pass(password,time):
     decode_string = base64.b64decode(password)
     i = len(decode_string)
-    if time < 10 :
+    if int(time) < 10 :
         real_pass = decode_string[1:i-1]
     else :
         real_pass = decode_string[2:i-2]
-    return real_pass
+    return str(real_pass)
 
 
 
