@@ -7,7 +7,7 @@ import base64
 from Crypto.Cipher import AES
 
 
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="127.0.0.1", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 #encrypt the default pass

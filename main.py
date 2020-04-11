@@ -15,8 +15,10 @@ site_domain_mane = "site.com"
 aes_key = site_settings.aes_key
 html = site_settings.html
 
-#start the main apai loop
+#program startups
 app = FastAPI()
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+
 
 @app.get("/")#This is for main page
 async def root():
@@ -53,6 +55,9 @@ def get_real_pass(password,time):
     else :
         real_pass = decode_string[2:i-2]
     return real_pass
+
+
+
 
 
 
