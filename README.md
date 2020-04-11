@@ -2,6 +2,10 @@
 
 The project OpenOLS is a new , light , fast Online Coursing system .
 
+# For developers
+
+我们有`dev.sunboy.site`作为本地服务器的前端地址，`api.sunboy.site`作为api的地址（不支持WebSocket）。
+
 ## Lisence 
 
 This project is capable under MIT Lisence.
