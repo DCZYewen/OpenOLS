@@ -2,6 +2,10 @@
 
 The project OpenOLS is a new , light , fast Online Coursing system .
 
+# For developers
+
+我们有`dev.sunboy.site`作为本地服务器的前端地址，`api.sunboy.site`作为api的地址（不支持WebSocket）。
+
 ## Lisence 
 
 This project is capable under MIT Lisence.
@@ -29,6 +33,8 @@ This project is capable under MIT Lisence.
     防止挂机
        
        非活动标签页时暂停播放
+       
+    分为必修和选修
 
 6.实时视频
 
@@ -46,6 +52,12 @@ This project is capable under MIT Lisence.
 
         --老师用手机直播，直推摄像头画面
         --老师用PC直播，采集摄像头和板书（PPT之类
+        
+7.测试
+
+    包括题型：单选，多选，填空，简答。由老师设置题目，客观题自动判分，主观题手动判分。
+
+    禁止复制网页文字，如果试图复制，弹窗或将复制的文字替换为“警告”
 
 ## Statements of How to achieve
 

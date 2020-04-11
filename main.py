@@ -13,12 +13,16 @@ BJ_Time = datetime.now(tz)
 site_url = "http://site.com"
 site_domain_mane = "site.com"
 aes_key = site_settings.aes_key
-
+html = site_settings.html
 
 #start the main apai loop
 app = FastAPI()
 
-@app.get("/suatus")#this is for heartbeat to detect the client status
+@app.get("/")#This is for main page
+async def root():
+    return(html)
+
+@app.get("/status")#this is for heartbeat to detect the client status
 async def status_check(user_id: int, time_stamp: int ,status: bool):#接收状态信息
     return("status" , "OK")
 
@@ -32,7 +36,11 @@ async def read_item(username: int, password: str, time: int): #这里是登录AP
     return user_information
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
-    encrypted_pass = encrypt_oracle(aes_key,read_pass)
+    encrypted_pass = encrypt_oracle(aes_key,real_pass)
+
+
+
+
 
 
 
