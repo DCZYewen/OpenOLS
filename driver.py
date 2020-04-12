@@ -1,3 +1,4 @@
+#This file is the database driver
 import psycopg2
 import sys
 import random
@@ -27,14 +28,4 @@ def encrypt_oracle(key,password):
     encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
     return encrypted_text
 
-sql = "\
-    INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + encrypt_oracle(aes_key,'admin') + "'" + ''' , false , 'admin' , 'admin'
-    )
-'''
-
-cur.execute(sql)
-#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
-conn.commit()
-print("Super User Created , super account admin super password admin , Please CHANGE your password in the site .")
-conn.close()
+print(encrypt_oracle(aes_key,'admin'))
