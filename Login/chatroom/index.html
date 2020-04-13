@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+   <head>
+   <meta charset="utf-8">
+   <title>OpelOLS聊天室</title>
+   <style>
+      body{
+         overflow: hidden;
+      }
+      h2{
+         margin-top: 30px;
+         text-align: center;
+         background-color: #393D49;
+         color: #fff;
+         font-weight: normal;
+         padding: 15px 0
+      }
+      #chat{
+         text-align: center;
+
+      }
+      #win{
+         margin-top: 20px;
+         text-align: center;
+      }
+      #sse{
+         margin-top: 10px;
+         text-align: center;
+      }
+      #sse button{
+         background-color: #009688;
+         color: #fff;
+         height: 40px;
+         border: 0;
+         border-radius: 3px 3px;
+         padding-left: 10px;
+         padding-right: 10px;
+         cursor: pointer;
+      }
+   </style>
+   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+
+   </head>
+   <body>
+      <h2>聊天室</h2>
+      <div id="chat">
+          <textarea id="history" cols="80" rows="40"></textarea>
+      </div>
+
+      <div id="win">
+         <textarea id="messagewin" cols="80" rows="5"></textarea>
+      </div>
+
+      <div id="sse">
+         <button onclick="sendMessage()">发送对话</button>
+      </div>
+
+      <script type="text/javascript">
+      var oHistory = $('#history');
+      var oWin = $('#messagewin');
+
+      if ("WebSocket" in window){
+         console.log("您的浏览器支持 WebSocket!");
+         var ws = new WebSocket("ws://localhost:9005");
+        //var ws = new WebSocket("ws://localhost:9005");
+         ws.onopen = function(){
+            console.log("websocket 已连接上");
+         }
+
+         ws.onmessage = function (evt) {
+            var dataReceive = evt.data;
+            console.log("数据已接收..."+dataReceive);
+            $('#history').val($('#history').val()+dataReceive+"\n");
+         };
+
+         ws.onclose = function()
+            {
+              console.log("连接已关闭...");
+         };
+
+      }else{
+         // 浏览器不支持 WebSocket
+         console.log("您的浏览器不支持 WebSocket!");
+      }
+
+      function sendMessage(){
+         var dataSend = oWin.val().trim();
+         ws.send(dataSend);
+         oWin.val('');
+      }
+
+   </script>
+   </body>
+</html>
