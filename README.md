@@ -63,7 +63,7 @@ This project is capable under MIT Lisence.
 
 1.前后端分离 前端使用H5 CSS HTML构建
 
-    1.直播流服务器后端采用NginX
+    1.直播流服务器后端采用SRS
     2.推送端输出端都使用rtmp协议。
     3.前端播放直播流采用flv.js，使用h5技术播放rtmp流，最可以降低延迟。
 
