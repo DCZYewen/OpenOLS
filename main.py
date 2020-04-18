@@ -8,6 +8,8 @@ import pytz
 from datetime import datetime
 import site_settings
 import random
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 #All constants declaration
 tz = pytz.timezone('Asia/Shanghai')
@@ -16,10 +18,11 @@ site_url = "http://site.com"
 site_domain_mane = "site.com"
 aes_key = site_settings.aes_key
 html = site_settings.html
+hash_hey = site_settings.hash_key
 
 #program startups
 app = FastAPI()
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 
@@ -39,12 +42,9 @@ async def root():
 async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
     user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
+    print(password)
     real_pass = get_real_pass(password,time)
-    encrypted_pass = encrypt_oracle(aes_key,real_pass)
-    sql = '''SELECT ACCOUNT , PASSWD FROM USERS WHERE ACCOUNT = ''' + "'" + username + "'" +  ''' AND PASSWD = ''' + "'" + encrypted_pass + "'" + ''';'''
-    print(sql)
-    cur.execute(sql)
-    a = cur.fetchone()
+    print(real_pass)
     return a
 
 
@@ -53,19 +53,16 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
 
 
 
-##This for encryption and so on .
+##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
-    decode_string = base64.b64decode(password)
+    encoder = base64.b64decode(password.encode('utf-8'))
+    decode_string = encoder.decode('utf-8')
     i = len(decode_string)
     if int(time) < 10 :
         real_pass = decode_string[1:i-1]
     else :
         real_pass = decode_string[2:i-2]
     return str(real_pass)
-
-
-
-
 
 
 
