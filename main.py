@@ -10,6 +10,8 @@ import site_settings
 import random
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from fastapi.middleware.cors import CORSMiddleware
+
 
 #All constants declaration
 tz = pytz.timezone('Asia/Shanghai')
@@ -24,6 +26,22 @@ hash_hey = site_settings.hash_key
 app = FastAPI()
 conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
+
+#接入CORS
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:6000",
+    "http://dev.metalkgstudio.club",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*:"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")#This is for main page
@@ -42,10 +60,14 @@ async def root():
 async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
     user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
-    print(password)
     real_pass = get_real_pass(password,time)
-    print(real_pass)
-    return a
+    init = "ACCOUNT = '" + username + "'"
+    result = SELECT_FUNC('USERS',init)
+    print(result[5])
+    if check_password_hash(result[5],real_pass):
+        return "YES"
+    else:
+        return "NO"
 
 
 
@@ -63,6 +85,13 @@ def get_real_pass(password,time):
     else :
         real_pass = decode_string[2:i-2]
     return str(real_pass)
+
+##查库驱动函数（单字段 单条件 单返回结果
+def SELECT_FUNC(table,operators):
+    sql = "SELECT * FROM " + table + " WHERE " + operators
+    cur.execute(sql)
+    return cur.fetchone()
+
 
 
 
