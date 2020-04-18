@@ -1,7 +1,7 @@
 import sys
 import psycopg2
 
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE USERS (USER_ID        INT     NOT NULL,
