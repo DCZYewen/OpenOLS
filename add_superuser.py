@@ -17,7 +17,7 @@ hash_hey = site_settings.hash_key
 
 #Initialize the hashlib
 _hash = hashlib.sha256(hash_hey.encode('utf-8'))
-
+_hash.update('admin'.encode('utf-8'))
 
 def add_to_16(value):
     while len(value) % 16 != 0:
@@ -35,10 +35,10 @@ def encrypt_oracle(key,password):
 
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + str(_hash.update('admin'.encode('utf-8'))) + "'" + ''' , false , 'admin' , 'admin'
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + _hash.hexdigest() + "'" + ''' , false , 'admin' , 'admin'
     )
 '''
-print(sql)
+
 
 cur.execute(sql)
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
