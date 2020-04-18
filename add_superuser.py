@@ -5,13 +5,19 @@ import string
 import site_settings
 import base64
 from Crypto.Cipher import AES
+import hashlib
 
 
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 #encrypt the default pass
 aes_key = site_settings.aes_key
+hash_hey = site_settings.hash_key
+
+#Initialize the hashlib
+_hash = hashlib.sha256(hash_hey.encode('utf-8'))
+
 
 def add_to_16(value):
     while len(value) % 16 != 0:
@@ -29,9 +35,10 @@ def encrypt_oracle(key,password):
 
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + encrypt_oracle(aes_key,'admin') + "'" + ''' , false , 'admin' , 'admin'
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + str(_hash.update('admin'.encode('utf-8'))) + "'" + ''' , false , 'admin' , 'admin'
     )
 '''
+print(sql)
 
 cur.execute(sql)
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
