@@ -44,6 +44,15 @@ cur.execute("CREATE TABLE CLASSES\
 print("Table CLASSES created successfully")
 #|201815  |2018  | 15    | 45      |
 
+cur.execute("CREATE TABLE TOKENS\
+            (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
+            TIME_CREATED TIMESTAMP       NOT NULL,\
+            EXPIRED      BOOLEAN         NOT NULL,\
+            TOKEN        TEXT            NOT NULL)")
+print("Table TOKENS created successfully")
+#|0000001 |20200418220000| False   | 39e9e146c9|
+
+
 print("Database successfully initiallized")
 conn.commit()
 conn.close()

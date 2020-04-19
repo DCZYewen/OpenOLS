@@ -65,9 +65,17 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     result = SELECT_FUNC('USERS',init)
     print(result[5])
     if check_password_hash(result[5],real_pass):
-        return "YES"
+        if result[7]=='admin':
+            pass
+        elif result[7]=='student':
+            pass
+        elif result[7]=='teacher':
+            pass
+        else:
+            pass
+
     else:
-        return "NO"
+        return "AUTH_ERROR"
 
 
 
