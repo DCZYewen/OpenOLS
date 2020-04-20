@@ -1,7 +1,7 @@
 import sys
 import psycopg2
 
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="192.168.0.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE USERS (USER_ID        INT     NOT NULL,
@@ -43,6 +43,15 @@ cur.execute("CREATE TABLE CLASSES\
             MEMBERS  INT             NOT NULL)")
 print("Table CLASSES created successfully")
 #|201815  |2018  | 15    | 45      |
+
+cur.execute("CREATE TABLE TOKENS\
+            (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
+            TIME_CREATED TIMESTAMP       NOT NULL,\
+            EXPIRED      BOOLEAN         NOT NULL,\
+            TOKEN        TEXT            NOT NULL)")
+print("Table TOKENS created successfully")
+#|0000001 |20200418220000| False   | 39e9e146c9|
+
 
 print("Database successfully initiallized")
 conn.commit()
