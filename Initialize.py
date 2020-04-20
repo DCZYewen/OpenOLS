@@ -48,9 +48,11 @@ cur.execute("CREATE TABLE TOKENS\
             (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
             TIME_CREATED TIMESTAMP       NOT NULL,\
             EXPIRED      BOOLEAN         NOT NULL,\
-            TOKEN        TEXT            NOT NULL)")
+            TOKEN        TEXT            NOT NULL,\
+            USER_ID      INT             NOT NULL\
+            AUTH         TEXT            NOT NULL;)")
 print("Table TOKENS created successfully")
-#|0000001 |20200418220000| False   | 39e9e146c9|
+#|0000001 |20200418220000| False   | 39e9e146c9| 90155664| admin |
 
 
 print("Database successfully initiallized")
