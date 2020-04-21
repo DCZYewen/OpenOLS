@@ -19,7 +19,7 @@ hash_hey = site_settings.hash_key
 
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'admin' , 'admin'
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
     )
 '''
 
