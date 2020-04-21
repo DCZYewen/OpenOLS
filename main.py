@@ -33,7 +33,7 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:6000",
-    "http://dev.metalkgstudio.club",
+    "http://dev.sunboy.site",
 ]
 app.add_middleware(
     CORSMiddleware,
