@@ -44,10 +44,10 @@ API功能：获取到服务器延时的API
   "auth" : "ADMIN",
   "tab" : 0//前端可以忽略，因为没P用哈哈哈哈
 ] // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
-
+注意：redirect_url可以根据auth变化，或者统一，再由前端判断。
 ```
 
-## 地址/get_new_token
+## 地址`/get_new_token`
 ```
 传入：user_id: int , token: str
 传回：
@@ -58,4 +58,53 @@ API功能：获取到服务器延时的API
   "user_id" : 90155664//传回user_id，请double check ID是否正确。
   "token" : "5a39e9e14129"//调用此API时注意，如果登陆时获取了权限是ADMIN，那新的ID也自动是ADMIN作为token权限。
 ]
+```
+
+## 地址`/get_main_content`
+```
+传入：token: str , user_id: int , section: int 
+传回：
+    1.当鉴权成功的时候（user_id与token对应，token未过期），返回需要显示的主要内容
+    2.当鉴权失败的时候返回 AUTH_ERROR
+    3.如果需要获取的section超出范围，返回错误信息section_invalid
+    4.如果数据库内部出现错误返回server_error
+参数解释：user_id: int 用户ID , token: str 登录时获取的或者从 get_now_token获取的上一个token。
+API调用错误：token_expired , section_invalid , token_not_match , server_error
+成功示例：
+[
+  "status" : "OK",
+  "people" : 43 /////等等等等懒得写
+]
+失败示例：
+[
+  "status" : "AUTH_ERROR",
+  "information" : "token_expired"//返回进一步的错误信息方便处理
+]
+
+注意：此API用于获取三个权限，各个账户的主界面信息。返回值根据user_id对应的权限等级。权限等级已在Login时告知。处理返回值时请自行根据权限判断。
+```
+## 地址`/get_live_addr`
+```
+传入：token: str , user_id: int , course_id: int
+传回：
+    1.鉴权基本同前。
+    2.传回rtmp_url , chat_url , board_url。分别是直播流地址，聊天室地址，黑板url。
+    3.由于实现起来过于蛋疼，忽略board_url吧。
+API调用错误：token_expired , course_not_exist , token_not_match , server_error , user_not_in_class（这个课程在数据库存在，但用户所在的班级并不是课程面向的班级 ，一般情况下这个错误并不会出现，因为错误的course_id不回被返回到前端去，只是为了防止有人硬改）, course_ended ,（同上，一般不会出现） , course_not_started（可能会出现，因为预定要上的课也会被返回前端），user_multi_course （一次正确的调用API会导致该直播间人数+1，同时刷新用户的 'IS_ONLINE"状态，如果该用户的 'IS_ONLINE'是True，则会返回本信息，禁止一个用户同时上两门课。如果上一节课退出，服务器会在15秒钟内探测到并重置该用户的 'IS_ONLINE'状态，同时如果课程到达时间，该状态也会被重置） 。
+失败示例基本同上
+成功示例：
+[
+  "status" : "OK",
+  "rtmp_url" : "rtmp://site.com/live/cid12849752",
+  "chat_url" : "ws://site.com/cid12321944",
+  "board_url" : "http://example.com" //这项没鸡儿用
+]
+```
+
+## 地址`/get_static_resourse`
+```
+传入：token: str , user_id: int , course_id: int
+传回：
+    1.鉴权基本同前。
+    2.
 ```
