@@ -16,8 +16,8 @@ from fastapi.middleware.cors import CORSMiddleware
 #All constants declaration
 tz = pytz.timezone('Asia/Shanghai')
 BJ_Time = datetime.now(tz)
-site_url = "http://site.com"
-site_domain_mane = "site.com"
+site_url = site_settings.site_url
+api_url = site_settings.api_url
 aes_key = site_settings.aes_key
 html = site_settings.html
 hash_hey = site_settings.hash_key
@@ -44,6 +44,7 @@ app.add_middleware(
 )
 
 
+
 @app.get("/")#This is for main page
 async def root():
     return(html)
@@ -63,14 +64,38 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     real_pass = get_real_pass(password,time)
     init = "ACCOUNT = '" + username + "'"
     result = SELECT_FUNC('USERS',init)
-    print(result[5])
+    print(result)
     if check_password_hash(result[5],real_pass):
-        if result[7]=='admin':
-            pass
-        elif result[7]=='student':
-            pass
-        elif result[7]=='teacher':
-            pass
+        if result[7]=='ADMIN':
+            login_admin_item = {"status" : "OK",
+            "redirect_url" : site_url + '/Admin',
+            "user_id" : result[0],
+            "token" : token_create(),
+            "AUTH" : str.upper(result[8]),
+            "tab" : 0
+            }
+            print(login_admin_item)
+            return login_admin_item
+        elif result[7]=='STUDENT':
+            login_stu_item = {"status" : "OK",
+            "redirect_url" : site_url + '/MainPage',
+            "user_id" : result[0],
+            "token" : token_create(),
+            "AUTH" : str.upper(result[8]),
+            "tab" : 0
+            }
+            print(login_stu_item)
+            return login_stu_item
+        elif result[7]=='TEACHER':
+            login_teacher_item = {"status" : "OK",
+            "redirect_url" : site_url + '/Teacher',
+            "user_id" : result[0],
+            "token" : token_create(),
+            "AUTH" : str.upper(result[8]),
+            "tab" : 0
+            }
+            print(login_admin_item)
+            return login_admin_item
         else:
             pass
 
@@ -100,7 +125,9 @@ def SELECT_FUNC(table,operators):
     cur.execute(sql)
     return cur.fetchone()
 
-
+#创建一个token
+def token_create():
+    return "9b21a27b5cc"
 
 
 #This is for AES password encryption and decryption

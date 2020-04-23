@@ -16,18 +16,31 @@ cur = conn.cursor()
 aes_key = site_settings.aes_key
 hash_hey = site_settings.hash_key
 
+#ADD SUPER USER
+#sql = "\
+#    INSERT INTO USERS VALUES(\
+#        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+#    )
+#'''
 
+#ADD STU
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , false , 'STUDENT' , 'student1'
     )
 '''
 
+#ADD 
+#sql = "\
+#    INSERT INTO USERS VALUES(\
+#        99999997 , 'Administrator' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+#    )
+#'''
 
-cur.execute(sql)
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
+cur.execute(sql)
 conn.commit()
-print("Super User Created , super account admin super password admin , Please CHANGE your password in the site .")
+print("User Created , super account admin super password admin , Please CHANGE your password in the site .")
 conn.close()
 
 

@@ -37,13 +37,13 @@ API功能：获取到服务器延时的API
     2.当身份验证成功时返回 json1①
 参数解释：username: str 用户名 , password: str 密码 , time: str 当前时间指 var myDate = new Date();var Sec = myDate.getSeconds(); 中的Sec
 
-①["status" : "OK",
+①{"status" : "OK",
   "redirect_url" : "http://dev.sunboy.site/admin",
   "user_id" : 90155664
   "token" : "5a39e9e146c9"
   "auth" : "ADMIN",
   "tab" : 0//前端可以忽略，因为没P用哈哈哈哈
-] // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
+ } // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
 注意：redirect_url可以根据auth变化，或者统一，再由前端判断。
 ```
 
