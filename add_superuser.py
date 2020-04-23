@@ -17,11 +17,11 @@ aes_key = site_settings.aes_key
 hash_hey = site_settings.hash_key
 
 #ADD SUPER USER
-#sql = "\
-#    INSERT INTO USERS VALUES(\
-#        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
-#    )
-#'''
+sql1 = "\
+    INSERT INTO USERS VALUES(\
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+    )
+'''
 
 #ADD STU
 sql = "\
@@ -31,14 +31,16 @@ sql = "\
 '''
 
 #ADD 
-#sql = "\
-#    INSERT INTO USERS VALUES(\
-#        99999997 , 'Administrator' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
-#    )
-#'''
+sql2 = "\
+    INSERT INTO USERS VALUES(\
+        99999997 , 'Administrator' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+    )
+'''
 
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
+cur.execute(sql1)
 cur.execute(sql)
+cur.execute(sql2)
 conn.commit()
 print("User Created , super account admin super password admin , Please CHANGE your password in the site .")
 conn.close()
