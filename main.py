@@ -29,8 +29,6 @@ cur = conn.cursor()
 
 #接入CORS
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:6000",
     "http://dev.sunboy.site",
@@ -71,7 +69,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
             "redirect_url" : site_url + '/Admin',
             "user_id" : result[0],
             "token" : token_create(),
-            "AUTH" : str.upper(result[8]),
+            "AUTH" : str.upper(result[7]),
             "tab" : 0
             }
             print(login_admin_item)
@@ -81,7 +79,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
             "redirect_url" : site_url + '/MainPage',
             "user_id" : result[0],
             "token" : token_create(),
-            "AUTH" : str.upper(result[8]),
+            "AUTH" : str.upper(result[7]),
             "tab" : 0
             }
             print(login_stu_item)
@@ -91,7 +89,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
             "redirect_url" : site_url + '/Teacher',
             "user_id" : result[0],
             "token" : token_create(),
-            "AUTH" : str.upper(result[8]),
+            "AUTH" : str.upper(result[7]),
             "tab" : 0
             }
             print(login_admin_item)
@@ -119,14 +117,34 @@ def get_real_pass(password,time):
         real_pass = decode_string[2:i-2]
     return str(real_pass)
 
+##插库驱动函数（单字段
+def INSERT_FUNC(table,*args):
+    pass
+
 ##查库驱动函数（单字段 单条件 单返回结果
 def SELECT_FUNC(table,operators):
     sql = "SELECT * FROM " + table + " WHERE " + operators
     cur.execute(sql)
     return cur.fetchone()
 
-#创建一个token
-def token_create():
+#创建一个token 并初始化信息
+def token_create(user_id,time):
+    OUT_FLAG = False
+    MAIN_LOOP_COUNTER = 0
+    TOKEN_STRING = ''#不知道这么写会不会翻车
+    while True:
+        if OUT_FLAG:
+            TOKEN_MIDDLE_STRING = user_id[MAIN_LOOP_COUNTER] + time[MAIN_LOOP_COUNTER]#这句拼接之
+            TOKEN_STRING = TOKEN_STRING + TOKEN_MIDDLE_STRING#把局部变量搬到外部变量
+            MAIN_LOOP_COUNTER = MAIN_LOOP_COUNTER + 1#把counter加1
+            if user_id.len() - 1 == MAIN_LOOP_COUNTER:#这是判断任意字符串是否达到了他的最高长度，在处理时间时，已将其增加为16位长度字符串。所以就默认userid短了。
+                OUT_FLAG = True#如果达到了就跳转到另一个分支
+            else :
+                pass
+        else :
+            TOKEN_STRING = TOKEN_STRING + time[MAIN_LOOP_COUNTER,time.len()-MAIN_LOOP_COUNTER]
+            break
+    
     return "9b21a27b5cc"
 
 
