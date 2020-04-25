@@ -65,13 +65,13 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     real_pass = get_real_pass(password,time)
     init = "ACCOUNT = '" + username + "'"
     result = SELECT_FUNC('USERS',init)
-    if not result == None:
+    if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
         if check_password_hash(result[5],real_pass):
             if result[7]=='ADMIN':
                 login_admin_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Admin',
                 "user_id" : result[0],
-                "token" : token_create(result[0]),
+                "token" : token_create(result[0],False),
                 "AUTH" : str.upper(result[7]),
                 "tab" : 0
                 }
@@ -81,7 +81,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
                 login_stu_item = {"status" : "OK",
                 "redirect_url" : site_url + '/MainPage',
                 "user_id" : result[0],
-                "token" : token_create(result[0]),
+                "token" : token_create(result[0],False),
                 "AUTH" : str.upper(result[7]),
                 "tab" : 0
                 }
@@ -91,7 +91,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
                 login_teacher_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Teacher',
                 "user_id" : result[0],
-                "token" : token_create(result[0]),
+                "token" : token_create(result[0],False),
                 "AUTH" : str.upper(result[7]),
                 "tab" : 0
                 }
@@ -103,8 +103,6 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
             return "AUTH_ERROR"
     else:
         return "AUTH_ERROR_NOUSER"
-
-
 
 
 
@@ -136,23 +134,49 @@ def INSERT_FUNC(table,*args):
 
 ##查库驱动函数（单字段 单条件 单返回结果
 def SELECT_FUNC(table,operators):
-    sql = "SELECT * FROM " + table + " WHERE " + operators
+    sql = "SELECT * FROM " + str(table) + " WHERE " + operators
     cur.execute(sql)
     return cur.fetchone()
 
-#创建一个token 并初始化信息
-def token_create(user_id):
+##更新数据库的驱动函数（单字段
+def UPDATA_FUNC(table,operators):
+    sql = "UPDATE " + str(table) + " SET " + operators
+    cur.execute(sql)
+    print("Something UPDATED")
+
+#创建一个token 并初始化信息 同时，当上一个token存在的时候，将上一个token过期
+#这里我使用了一个Flag表示函数是否由登陆函数调起，因为登陆时不会传入上一个token 即 如果第二个参数是False表示其由登陆函数拉起
+def token_create(user_id,*args):
     OUT_FLAG = False
     global TOKEN_NO
     time = get_time_string() + '00'
     user_id = str(user_id)
     TOKEN_STRING = user_id + time
     encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
-    init = "USER_ID = '" + str(user_id) + "'"
+    init = "USER_ID = '" + user_id + "'" #此处获取user的权限
     AUTH = SELECT_FUNC('users',init)[7]
+
+    if args[0] == True:
+        init = "TOKEN = '" + str(args[1]) + "'"
+        TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+        init = "EXPIRED = True"
+        UPDATA_FUNC('tokens',init)
+        print(TOKEN_ITEM)
+    else :
+        init = "USER_ID = '" + user_id + "'"
+        TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+        print(TOKEN_ITEM)
+        if TOKEN_ITEM == None :#如果该用户上一个TOKEN不存在
+            pass
+        else :#当上一个token存在的时候expire它
+            init = "EXPIRED = True WHERE USER_ID = " + user_id
+            UPDATA_FUNC('tokens',init)#这里强制过期上一个token
+        print(TOKEN_ITEM)
+        print("\n")
+
     INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
     TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
-    return TOKEN_STRING
+    return encrypted
 
 #This is for AES password encryption and decryption
 def add_to_16(value):
@@ -167,6 +191,7 @@ def encrypt_oracle(key,password):
     encrypt_aes = aes.encrypt(add_to_16(password))
     #用base64转成字符串形式
     encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
+    encrypted_text = encrypted_text[0:len(encrypted_text) - 1]
     return encrypted_text
 
 def decrypt_oracle(key,encrypted_text):
