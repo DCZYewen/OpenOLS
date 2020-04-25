@@ -27,6 +27,4 @@ else:
     sec = str(localtime[5])
 
 time_entity = str(localtime[0])+mon+day+hour+min+sec
-MAIN_LOOP_COUNTER = 0
-print(time_entity[MAIN_LOOP_COUNTER : len(time_entity) - MAIN_LOOP_COUNTER])
 print(time_entity)
