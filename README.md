@@ -1,6 +1,6 @@
 # OpenOLS
 
-The project OpenOLS is a new , light , fast Online Coursing system .
+The project OpenOLS is a new , light , fast OnLine Studtying system .
 
 # For developers
 
