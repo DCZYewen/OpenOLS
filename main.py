@@ -104,7 +104,18 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     else:
         return "AUTH_ERROR_NOUSER"
 
-
+@app.get("/get_new_token")#刷新token用
+async def flush(user_id: int , token: str):
+    user_id = str(user_id)
+    new_token = token_create(user_id,True,token)
+    if new_token[1] == 'token_authentication_failure':
+        return ("status","token_authentication_failure")
+    else :
+        back_item = {"status":"ok",
+        "user_id" : user_id,
+        "token" : new_token
+        }#构造返回结构
+        return back_item
 
 
 
@@ -156,11 +167,15 @@ def token_create(user_id,*args):
     init = "USER_ID = '" + user_id + "'" #此处获取user的权限
     AUTH = SELECT_FUNC('users',init)[7]
 
-    if args[0] == True:
+    if args[0] == True:#程序的这个分支保证token不会被恶意过期
         init = "TOKEN = '" + str(args[1]) + "'"
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
-        init = "EXPIRED = True"
-        UPDATA_FUNC('tokens',init)
+        print(TOKEN_ITEM)
+        if TOKEN_ITEM == None or TOKEN_ITEM[2] == True:#如果传入的token并不存在或者已过期
+            return ("info" , "token_authentication_failure")
+        else :#如果传入的token和user_id对应
+            init = "EXPIRED = True WHERE USER_ID = " + user_id
+            UPDATA_FUNC('tokens',init)
     else :
         init = "USER_ID = '" + user_id + "'"
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
@@ -169,7 +184,6 @@ def token_create(user_id,*args):
         else :#当上一个token存在的时候expire它
             init = "EXPIRED = True WHERE USER_ID = " + user_id
             UPDATA_FUNC('tokens',init)#这里强制过期上一个token
-        print("\n")
 
     INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
     TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
