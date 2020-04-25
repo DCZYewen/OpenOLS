@@ -161,17 +161,14 @@ def token_create(user_id,*args):
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
         init = "EXPIRED = True"
         UPDATA_FUNC('tokens',init)
-        print(TOKEN_ITEM)
     else :
         init = "USER_ID = '" + user_id + "'"
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
-        print(TOKEN_ITEM)
         if TOKEN_ITEM == None :#如果该用户上一个TOKEN不存在
             pass
         else :#当上一个token存在的时候expire它
             init = "EXPIRED = True WHERE USER_ID = " + user_id
             UPDATA_FUNC('tokens',init)#这里强制过期上一个token
-        print(TOKEN_ITEM)
         print("\n")
 
     INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
