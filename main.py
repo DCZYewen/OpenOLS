@@ -4,8 +4,7 @@ from Crypto.Cipher import AES
 import psycopg2
 import sys
 import string
-import pytz
-from datetime import datetime
+import time
 import site_settings
 import random
 from werkzeug.security import generate_password_hash
@@ -14,8 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 #All constants declaration
-tz = pytz.timezone('Asia/Shanghai')
-BJ_Time = datetime.now(tz)
+tz = 8 #声明时区UTC+8
 site_url = site_settings.site_url
 api_url = site_settings.api_url
 aes_key = site_settings.aes_key
@@ -26,19 +24,21 @@ hash_hey = site_settings.hash_key
 app = FastAPI()
 conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
-cur.execute('SELECT MAX(TOKEN_NO) FROM TOKENS;')
-global TOKEN_NO 
+cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
+global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
+TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
 
 #接入CORS
 origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:6000",
-    "http://dev.sunboy.site",
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*:"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -65,43 +65,44 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     real_pass = get_real_pass(password,time)
     init = "ACCOUNT = '" + username + "'"
     result = SELECT_FUNC('USERS',init)
-    print(result)
-    if check_password_hash(result[5],real_pass):
-        if result[7]=='ADMIN':
-            login_admin_item = {"status" : "OK",
-            "redirect_url" : site_url + '/Admin',
-            "user_id" : result[0],
-            "token" : token_create(),
-            "AUTH" : str.upper(result[7]),
-            "tab" : 0
-            }
-            print(login_admin_item)
-            return login_admin_item
-        elif result[7]=='STUDENT':
-            login_stu_item = {"status" : "OK",
-            "redirect_url" : site_url + '/MainPage',
-            "user_id" : result[0],
-            "token" : token_create(),
-            "AUTH" : str.upper(result[7]),
-            "tab" : 0
-            }
-            print(login_stu_item)
-            return login_stu_item
-        elif result[7]=='TEACHER':
-            login_teacher_item = {"status" : "OK",
-            "redirect_url" : site_url + '/Teacher',
-            "user_id" : result[0],
-            "token" : token_create(),
-            "AUTH" : str.upper(result[7]),
-            "tab" : 0
-            }
-            print(login_admin_item)
-            return login_admin_item
+    if not result == None:
+        if check_password_hash(result[5],real_pass):
+            if result[7]=='ADMIN':
+                login_admin_item = {"status" : "OK",
+                "redirect_url" : site_url + '/Admin',
+                "user_id" : result[0],
+                "token" : token_create(result[0]),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_admin_item)
+                return login_admin_item
+            elif result[7]=='STUDENT':
+                login_stu_item = {"status" : "OK",
+                "redirect_url" : site_url + '/MainPage',
+                "user_id" : result[0],
+                "token" : token_create(result[0]),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_stu_item)
+                return login_stu_item
+            elif result[7]=='TEACHER':
+                login_teacher_item = {"status" : "OK",
+                "redirect_url" : site_url + '/Teacher',
+                "user_id" : result[0],
+                "token" : token_create(result[0]),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_teacher_item)
+                return login_teacher_item
+            else:
+                pass
         else:
-            pass
-
+            return "AUTH_ERROR"
     else:
-        return "AUTH_ERROR"
+        return "AUTH_ERROR_NOUSER"
 
 
 
@@ -123,11 +124,12 @@ def get_real_pass(password,time):
 ##插库驱动函数（单行
 def INSERT_FUNC(table,*args):
     TURPLE_COUNTER = 0
-    sql = 'INSERT INTO ' + args[0] + ' VALUES ('#构造SQL语句
+    sql = 'INSERT INTO ' + str(table) + " VALUES ('"#构造SQL语句
     while len(args) > TURPLE_COUNTER + 1:
-        sql = sql + args[TURPLE_COUNTER] + ', '
+        sql = sql + str(args[TURPLE_COUNTER]) + "', '"
         TURPLE_COUNTER = TURPLE_COUNTER + 1
-    sql = sql + args[TURPLE_COUNTER] + ');'
+    
+    sql = sql + str(args[TURPLE_COUNTER]) + "');"
     print(sql)
     cur.execute(sql)
     conn.commit()
@@ -139,31 +141,18 @@ def SELECT_FUNC(table,operators):
     return cur.fetchone()
 
 #创建一个token 并初始化信息
-def token_create(user_id,time,):
+def token_create(user_id):
     OUT_FLAG = False
     global TOKEN_NO
-    MAIN_LOOP_COUNTER = 0
-    time = str(time)
-    TOKEN_STRING = ''#不知道这么写会不会翻车
-    while True:
-        if OUT_FLAG:
-            TOKEN_MIDDLE_STRING = user_id[MAIN_LOOP_COUNTER] + time[MAIN_LOOP_COUNTER]#这句拼接之
-            TOKEN_STRING = TOKEN_STRING + TOKEN_MIDDLE_STRING#把局部变量搬到外部变量
-            MAIN_LOOP_COUNTER = MAIN_LOOP_COUNTER + 1#把counter加1
-            if user_id.len() - 1 == MAIN_LOOP_COUNTER:#这是判断任意字符串是否达到了他的最高长度，在处理时间时，已将其增加为16位长度字符串。所以就默认userid短了。
-                OUT_FLAG = True#如果达到了就跳转到另一个分支
-            else :
-                pass
-        else :
-            TOKEN_STRING = TOKEN_STRING + time[MAIN_LOOP_COUNTER,time.len()-MAIN_LOOP_COUNTER]
-            break
+    time = get_time_string() + '00'
+    user_id = str(user_id)
+    TOKEN_STRING = user_id + time
     encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
-    init = "USER_ID = '" + user_id + "'"
-    AUTH = SELECT_FUNC(user_id,init)[7]
-    INSERT_FUNC('tokens',TOKEN_NO,time,'False',TOKEN_STRING,user_id,AUTH)
-    TOKEN_NO = TOKEN_NO+1#注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
-    return "9b21a27b5cc"
-
+    init = "USER_ID = '" + str(user_id) + "'"
+    AUTH = SELECT_FUNC('users',init)[7]
+    INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
+    TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
+    return TOKEN_STRING
 
 #This is for AES password encryption and decryption
 def add_to_16(value):
@@ -180,7 +169,7 @@ def encrypt_oracle(key,password):
     encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
     return encrypted_text
 
-def decrypt_oralce(key,encrypted_text):
+def decrypt_oracle(key,encrypted_text):
     aes = AES.new(add_to_16(key), AES.MODE_ECB)
     #优先逆向解密base64成bytes
     base64_decrypted = base64.decodebytes(encrypted_text.encode(encoding='utf-8'))
@@ -188,3 +177,27 @@ def decrypt_oralce(key,encrypted_text):
     decrypted_text = str(aes.decrypt(base64_decrypted),encoding='utf-8').replace('\0','') 
     return(decrypted_text)
 
+def get_time_string():#这是一个获取当前时间字符串格式的函数（精确到秒
+    localtime = time.localtime(time.time())
+    if localtime[1] <= 10:#格式化月份
+        mon = '0' + str(localtime[1])
+    else:
+        mon = str(localtime[1])
+    if localtime[2] <= 10:#天
+        day = '0' + str(localtime[2])
+    else:
+        day = str(localtime[2])
+    if localtime[3] <= 10:#小时
+        hour = '0' + str(localtime[3])
+    else:
+        hour = str(localtime[3])
+    if localtime[4] <= 10:#分钟
+        min = '0' + str(localtime[4])
+    else:
+        min = str(localtime[4])
+    if localtime[5] <= 10:#秒
+        sec = '0' + str(localtime[5])
+    else:
+        sec = str(localtime[5])
+    time_entity = str(localtime[0])+mon+day+hour+min+sec
+    return time_entity

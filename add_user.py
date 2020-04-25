@@ -30,10 +30,10 @@ sql = "\
     )
 '''
 
-#ADD 
+#ADD TEACHER
 sql2 = "\
     INSERT INTO USERS VALUES(\
-        99999997 , 'Administrator' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' , false , 'TEACHER' , 'teacher1'
     )
 '''
 
@@ -42,7 +42,7 @@ cur.execute(sql1)
 cur.execute(sql)
 cur.execute(sql2)
 conn.commit()
-print("User Created , super account admin super password admin , Please CHANGE your password in the site .")
+print("User Created , super account admin super password admin .\n Test Teacher : Teast_Teacher1 teacher1 \n Test Student Test_Stu1 student1")
 conn.close()
 
 
