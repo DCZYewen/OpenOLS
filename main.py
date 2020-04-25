@@ -26,6 +26,9 @@ hash_hey = site_settings.hash_key
 app = FastAPI()
 conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
+cur.execute('SELECT MAX(TOKEN_NO) FROM TOKENS;')
+global TOKEN_NO 
+TOKEN_NO = cur.fetchone()#声明全局变量
 
 #接入CORS
 origins = [
@@ -117,9 +120,17 @@ def get_real_pass(password,time):
         real_pass = decode_string[2:i-2]
     return str(real_pass)
 
-##插库驱动函数（单字段
+##插库驱动函数（单行
 def INSERT_FUNC(table,*args):
-    pass
+    TURPLE_COUNTER = 0
+    sql = 'INSERT INTO ' + args[0] + ' VALUES ('#构造SQL语句
+    while len(args) > TURPLE_COUNTER + 1:
+        sql = sql + args[TURPLE_COUNTER] + ', '
+        TURPLE_COUNTER = TURPLE_COUNTER + 1
+    sql = sql + args[TURPLE_COUNTER] + ');'
+    print(sql)
+    cur.execute(sql)
+    conn.commit()
 
 ##查库驱动函数（单字段 单条件 单返回结果
 def SELECT_FUNC(table,operators):
@@ -128,9 +139,11 @@ def SELECT_FUNC(table,operators):
     return cur.fetchone()
 
 #创建一个token 并初始化信息
-def token_create(user_id,time):
+def token_create(user_id,time,):
     OUT_FLAG = False
+    global TOKEN_NO
     MAIN_LOOP_COUNTER = 0
+    time = str(time)
     TOKEN_STRING = ''#不知道这么写会不会翻车
     while True:
         if OUT_FLAG:
@@ -144,7 +157,11 @@ def token_create(user_id,time):
         else :
             TOKEN_STRING = TOKEN_STRING + time[MAIN_LOOP_COUNTER,time.len()-MAIN_LOOP_COUNTER]
             break
-    
+    encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
+    init = "USER_ID = '" + user_id + "'"
+    AUTH = SELECT_FUNC(user_id,init)[7]
+    INSERT_FUNC('tokens',TOKEN_NO,time,'False',TOKEN_STRING,user_id,AUTH)
+    TOKEN_NO = TOKEN_NO+1#注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
     return "9b21a27b5cc"
 
 
