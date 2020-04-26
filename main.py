@@ -4,8 +4,7 @@ from Crypto.Cipher import AES
 import psycopg2
 import sys
 import string
-import pytz
-from datetime import datetime
+import time
 import site_settings
 import random
 from werkzeug.security import generate_password_hash
@@ -14,10 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 #All constants declaration
-tz = pytz.timezone('Asia/Shanghai')
-BJ_Time = datetime.now(tz)
-site_url = "http://site.com"
-site_domain_mane = "site.com"
+tz = 8 #声明时区UTC+8
+site_url = site_settings.site_url
+api_url = site_settings.api_url
 aes_key = site_settings.aes_key
 html = site_settings.html
 hash_hey = site_settings.hash_key
@@ -26,6 +24,10 @@ hash_hey = site_settings.hash_key
 app = FastAPI()
 conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
 cur = conn.cursor()
+cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
+global TOKEN_NO
+TOKEN_NO = cur.fetchone()#声明全局变量
+TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
 
 #接入CORS
 origins = [
@@ -33,15 +35,15 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:6000",
-    "http://dev.sunboy.site",
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*:"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 @app.get("/")#This is for main page
@@ -63,25 +65,61 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     real_pass = get_real_pass(password,time)
     init = "ACCOUNT = '" + username + "'"
     result = SELECT_FUNC('USERS',init)
-    print(result[5])
-    if check_password_hash(result[5],real_pass):
-        if result[7]=='admin':
-            pass
-        elif result[7]=='student':
-            pass
-        elif result[7]=='teacher':
-            pass
+    if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
+        if check_password_hash(result[5],real_pass):
+            if result[7]=='ADMIN':
+                login_admin_item = {"status" : "OK",
+                "redirect_url" : site_url + '/Admin',
+                "user_id" : result[0],
+                "token" : token_create(result[0],False),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_admin_item)
+                return login_admin_item
+            elif result[7]=='STUDENT':
+                login_stu_item = {"status" : "OK",
+                "redirect_url" : site_url + '/MainPage',
+                "user_id" : result[0],
+                "token" : token_create(result[0],False),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_stu_item)
+                return login_stu_item
+            elif result[7]=='TEACHER':
+                login_teacher_item = {"status" : "OK",
+                "redirect_url" : site_url + '/Teacher',
+                "user_id" : result[0],
+                "token" : token_create(result[0],False),
+                "AUTH" : str.upper(result[7]),
+                "tab" : 0
+                }
+                print(login_teacher_item)
+                return login_teacher_item
+            else:
+                pass
         else:
-            pass
-
+            return "AUTH_ERROR"
     else:
-        return "AUTH_ERROR"
+        return "AUTH_ERROR_NOUSER"
 
+@app.get("/get_new_token")#刷新token用
+async def flush(user_id: int , token: str):
+    user_id = str(user_id)
+    new_token = token_create(user_id,True,token)
+    if new_token[1] == 'token_authentication_failure':
+        return ("status","token_authentication_failure")
+    else :
+        back_item = {"status":"ok",
+        "user_id" : user_id,
+        "token" : new_token
+        }#构造返回结构
+        return back_item
 
-
-
-
-
+@app.get("/get_main_content")
+async def main_content(token: str , user_id: int , section: int):
+    pass
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
@@ -94,13 +132,75 @@ def get_real_pass(password,time):
         real_pass = decode_string[2:i-2]
     return str(real_pass)
 
+##插库驱动函数（单行
+def INSERT_FUNC(table,*args):
+    TURPLE_COUNTER = 0
+    sql = 'INSERT INTO ' + str(table) + " VALUES ('"#构造SQL语句
+    while len(args) > TURPLE_COUNTER + 1:
+        sql = sql + str(args[TURPLE_COUNTER]) + "', '"
+        TURPLE_COUNTER = TURPLE_COUNTER + 1
+    
+    sql = sql + str(args[TURPLE_COUNTER]) + "');"
+    print(sql)
+    cur.execute(sql)
+    conn.commit()
+
 ##查库驱动函数（单字段 单条件 单返回结果
 def SELECT_FUNC(table,operators):
-    sql = "SELECT * FROM " + table + " WHERE " + operators
+    sql = "SELECT * FROM " + str(table) + " WHERE " + operators
     cur.execute(sql)
     return cur.fetchone()
 
+##更新数据库的驱动函数（单字段
+def UPDATA_FUNC(table,operators):
+    sql = "UPDATE " + str(table) + " SET " + operators
+    cur.execute(sql)
+    print("Something UPDATED")
 
+#创建一个token 并初始化信息 同时，当上一个token存在的时候，将上一个token过期
+#这里我使用了一个Flag表示函数是否由登陆函数调起，因为登陆时不会传入上一个token 即 如果第二个参数是False表示其由登陆函数拉起
+def token_create(user_id,*args):
+    OUT_FLAG = False
+    global TOKEN_NO
+    time = get_time_string() + '00'
+    user_id = str(user_id)
+    TOKEN_STRING = user_id + time
+    encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
+    init = "USER_ID = '" + user_id + "'" #此处获取user的权限
+    AUTH = SELECT_FUNC('users',init)[7]
+
+    if args[0] == True:#程序的这个分支保证token不会被恶意过期
+        if token_check(args[1]) == 'ERROR TOKEN NOT EXIST' or token_check(args[1]) == 'TOKEN EXPIRED' or \
+            token_check(args[1]) == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
+            return ("info" , "token_authentication_failure")
+        else :#如果传入的token和user_id对应
+            init = "EXPIRED = True WHERE USER_ID = " + user_id
+            UPDATA_FUNC('tokens',init)
+    else :
+        init = "USER_ID = '" + user_id + "'"
+        TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+        if TOKEN_ITEM == None :#如果该用户上一个TOKEN不存在
+            pass
+        else :#当上一个token存在的时候expire它
+            init = "EXPIRED = True WHERE USER_ID = " + user_id
+            UPDATA_FUNC('tokens',init)#这里强制过期上一个token
+
+    INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
+    TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
+    return encrypted
+
+def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
+    init = "TOKEN = '" + str(token) + "'"
+    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    print(TOKEN_ITEM[1][:14])
+    if TOKEN_ITEM == None :#如果token不存在，抛出异常
+        return 'ERROR TOKEN NOT EXIST'
+    elif TOKEN_ITEM[3] == True :
+        return 'TOKEN EXPIRED'
+    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+        return 'TOKEN TIME INVAID'
+    else :
+        return 'TOKEN VALID'
 
 
 #This is for AES password encryption and decryption
@@ -116,13 +216,33 @@ def encrypt_oracle(key,password):
     encrypt_aes = aes.encrypt(add_to_16(password))
     #用base64转成字符串形式
     encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
+    encrypted_text = encrypted_text[0:len(encrypted_text) - 1]
     return encrypted_text
 
-def decrypt_oralce(key,encrypted_text):
+def decrypt_oracle(key,encrypted_text):
     aes = AES.new(add_to_16(key), AES.MODE_ECB)
     #优先逆向解密base64成bytes
     base64_decrypted = base64.decodebytes(encrypted_text.encode(encoding='utf-8'))
     #执行解密密并转码返回str
     decrypted_text = str(aes.decrypt(base64_decrypted),encoding='utf-8').replace('\0','') 
     return(decrypted_text)
+
+def get_time_string():#这是一个获取当前时间字符串格式的函数（精确到秒
+    localtime = time.localtime(time.time())
+    time_entity = time.strftime("%Y%m%d%H%M%S",localtime)
+    return time_entity
+
+def fmt_time(time_string): #返回时间元组和时间戳
+    stamp = str(time.mktime(time.strptime(time_string,"%Y%m%d%H%M%S")))
+    return stamp
+
+def token_is_valid(token_create_time):#检查TOKEN是否已经过时的函数
+    ts1 = fmt_time(token_create_time)
+    #print(str(ts1))
+    ts2 = fmt_time(get_time_string())
+    #print(str(ts2))
+    if 0 < float(ts1) - float(ts2) < 3600 :
+        return True
+    else :
+        return False
 

@@ -23,8 +23,8 @@ cur.execute("CREATE TABLE COURSE\
         PEOPLE    INT             NOT NULL,\
         CLASS_IN  TEXT            NOT NULL,\
         LISTENING INT             NOT NULL,\
-        TIME_START TIMESTAMP      NOT NULL,\
-        TIME_END   TIMESTAMP     NOT NULL)")
+        TIME_START TEXT           NOT NULL,\
+        TIME_END   TEXT           NOT NULL)")
 print("Table COURSE created successfully")
 #|COURSE_ID| TITLE           | PEOPLE | CLASS_IN   |LISTENING| PASSWD |TIME_START      |TIME_END        |
 
@@ -46,11 +46,11 @@ print("Table CLASSES created successfully")
 
 cur.execute("CREATE TABLE TOKENS\
             (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
-            TIME_CREATED TIMESTAMP       NOT NULL,\
+            TIME_CREATED TEXT       NOT NULL,\
             EXPIRED      BOOLEAN         NOT NULL,\
             TOKEN        TEXT            NOT NULL,\
-            USER_ID      INT             NOT NULL\
-            AUTH         TEXT            NOT NULL;)")
+            USER_ID      INT             NOT NULL,\
+            AUTH         TEXT            NOT NULL)")
 print("Table TOKENS created successfully")
 #|0000001 |20200418220000| False   | 39e9e146c9| 90155664| admin |
 
