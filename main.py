@@ -107,6 +107,8 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
 @app.get("/get_new_token")#刷新token用
 async def flush(user_id: int , token: str):
     user_id = str(user_id)
+    token = token.replace(' ','+')
+    print(token)
     new_token = token_create(user_id,True,token)
     if new_token[1] == 'token_authentication_failure':
         return ("status","token_authentication_failure")
@@ -170,8 +172,9 @@ def token_create(user_id,*args):
     AUTH = SELECT_FUNC('users',init)[7]
 
     if args[0] == True:#程序的这个分支保证token不会被恶意过期
-        if token_check(args[1]) == 'ERROR TOKEN NOT EXIST' or token_check(args[1]) == 'TOKEN EXPIRED' or \
-            token_check(args[1]) == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
+        check_item = token_check(args[1])
+        print(check_item)
+        if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
             init = "EXPIRED = True WHERE USER_ID = " + user_id
@@ -190,12 +193,11 @@ def token_create(user_id,*args):
     return encrypted
 
 def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
-    init = "TOKEN = '" + str(token) + "'"
+    init = "TOKEN = '" + token + "'"
     TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
-    print(TOKEN_ITEM[1][:14])
     if TOKEN_ITEM == None :#如果token不存在，抛出异常
         return 'ERROR TOKEN NOT EXIST'
-    elif TOKEN_ITEM[3] == True :
+    elif TOKEN_ITEM[2] == True :
         return 'TOKEN EXPIRED'
     elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
         return 'TOKEN TIME INVAID'
