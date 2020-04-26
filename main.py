@@ -117,7 +117,9 @@ async def flush(user_id: int , token: str):
         }#构造返回结构
         return back_item
 
-
+@app.get("/get_main_content")
+async def main_content(token: str , user_id: int , section: int):
+    pass
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
@@ -168,10 +170,8 @@ def token_create(user_id,*args):
     AUTH = SELECT_FUNC('users',init)[7]
 
     if args[0] == True:#程序的这个分支保证token不会被恶意过期
-        init = "TOKEN = '" + str(args[1]) + "'"
-        TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
-        print(TOKEN_ITEM)
-        if TOKEN_ITEM == None or TOKEN_ITEM[2] == True:#如果传入的token并不存在或者已过期
+        if token_check(args[1]) == 'ERROR TOKEN NOT EXIST' or token_check(args[1]) == 'TOKEN EXPIRED' or \
+            token_check(args[1]) == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
             init = "EXPIRED = True WHERE USER_ID = " + user_id
@@ -188,6 +188,20 @@ def token_create(user_id,*args):
     INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
     TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
     return encrypted
+
+def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
+    init = "TOKEN = '" + str(token) + "'"
+    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    print(TOKEN_ITEM[1][:14])
+    if TOKEN_ITEM == None :#如果token不存在，抛出异常
+        return 'ERROR TOKEN NOT EXIST'
+    elif TOKEN_ITEM[3] == True :
+        return 'TOKEN EXPIRED'
+    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+        return 'TOKEN TIME INVAID'
+    else :
+        return 'TOKEN VALID'
+
 
 #This is for AES password encryption and decryption
 def add_to_16(value):
@@ -215,25 +229,20 @@ def decrypt_oracle(key,encrypted_text):
 
 def get_time_string():#这是一个获取当前时间字符串格式的函数（精确到秒
     localtime = time.localtime(time.time())
-    if localtime[1] <= 10:#格式化月份
-        mon = '0' + str(localtime[1])
-    else:
-        mon = str(localtime[1])
-    if localtime[2] <= 10:#天
-        day = '0' + str(localtime[2])
-    else:
-        day = str(localtime[2])
-    if localtime[3] <= 10:#小时
-        hour = '0' + str(localtime[3])
-    else:
-        hour = str(localtime[3])
-    if localtime[4] <= 10:#分钟
-        min = '0' + str(localtime[4])
-    else:
-        min = str(localtime[4])
-    if localtime[5] <= 10:#秒
-        sec = '0' + str(localtime[5])
-    else:
-        sec = str(localtime[5])
-    time_entity = str(localtime[0])+mon+day+hour+min+sec
+    time_entity = time.strftime("%Y%m%d%H%M%S",localtime)
     return time_entity
+
+def fmt_time(time_string): #返回时间元组和时间戳
+    stamp = str(time.mktime(time.strptime(time_string,"%Y%m%d%H%M%S")))
+    return stamp
+
+def token_is_valid(token_create_time):#检查TOKEN是否已经过时的函数
+    ts1 = fmt_time(token_create_time)
+    #print(str(ts1))
+    ts2 = fmt_time(get_time_string())
+    #print(str(ts2))
+    if 0 < float(ts1) - float(ts2) < 3600 :
+        return True
+    else :
+        return False
+
