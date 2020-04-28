@@ -123,11 +123,12 @@ async def flush(user_id: int , token: str):
 async def logout(user_id: int , token: str):
     init = "TOKEN = '" + token + "'"
     TOKEN_ITEM = SELECT_FUNC('users',init)
+    check_item = token_check(token)
     if TOKEN_ITEM==None :
         return("status" , "logout_failed")
-    elif not token_check == 'TOKEN VALID':
+    elif not check_item == 'TOKEN VALID':
         return("status" , "OK")
-    elif token_check == 'TOKEN VALID':
+    elif check_item == 'TOKEN VALID':
         init = "EXPIRED = True WHERE USER_ID = " + user_id
         UPDATA_FUNC('tokens',init)
         return("status","OK")
