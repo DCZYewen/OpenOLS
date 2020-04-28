@@ -119,6 +119,22 @@ async def flush(user_id: int , token: str):
         }#构造返回结构
         return back_item
 
+@app.get("/logout")#销毁Token，登出
+async def logout(user_id: int , token: str):
+    init = "TOKEN = '" + token + "'"
+    TOKEN_ITEM = SELECT_FUNC('users',init)
+    if TOKEN_ITEM==None :
+        return("status" , "logout_failed")
+    elif not token_check == 'TOKEN VALID':
+        return("status" , "OK")
+    elif token_check == 'TOKEN VALID':
+        init = "EXPIRED = True WHERE USER_ID = " + user_id
+        UPDATA_FUNC('tokens',init)
+        return("status","OK")
+    else :
+        return("status" , "logout_failed")
+    pass
+
 @app.get("/get_main_content")
 async def main_content(token: str , user_id: int , section: int):
     pass
