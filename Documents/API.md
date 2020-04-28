@@ -51,13 +51,23 @@ API功能：获取到服务器延时的API
 ```
 传入：user_id: int , token: str
 传回：
-    1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token。
+    1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token，获取一个与user_id相对的新token，同时旧的token会被标记为失效。
     2.当鉴权失败的时候（上述条件任一不符合），返回token_authentication_failure
 参数解释：user_id: int 用户ID , token: str 登录时获取的token或者从本API获取的上一个token。注意！ 一旦新的token被注册，上一个token会立刻失效。
-["status" : "OK",//或者可能是token_authentication_failure
+{"status" : "OK",//或者可能是token_authentication_failure
   "user_id" : 90155664//传回user_id，请double check ID是否正确。
   "token" : "5a39e9e14129"//调用此API时注意，如果登陆时获取了权限是ADMIN，那新的ID也自动是ADMIN作为token权限。
-]
+}
+```
+
+## 地址`/logout`
+```
+传入：user_id: int , token: str
+传回：
+    1.当鉴权成功的时候，（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token。
+    2.鉴权失败的时候抛出 logout_failed 。
+{"status" : "OK",//或者可能是logout_failed}
+
 ```
 
 ## 地址`/get_main_content`
@@ -71,15 +81,15 @@ API功能：获取到服务器延时的API
 参数解释：user_id: int 用户ID , token: str 登录时获取的或者从 get_now_token获取的上一个token。
 API调用错误：token_expired , section_invalid , token_not_match , server_error
 成功示例：
-[
+{
   "status" : "OK",
   "people" : 43 /////等等等等懒得写
-]
+}
 失败示例：
-[
+{
   "status" : "AUTH_ERROR",
   "information" : "token_expired"//返回进一步的错误信息方便处理
-]
+}
 
 注意：此API用于获取三个权限，各个账户的主界面信息。返回值根据user_id对应的权限等级。权限等级已在Login时告知。处理返回值时请自行根据权限判断。
 ```
