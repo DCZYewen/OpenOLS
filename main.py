@@ -122,7 +122,8 @@ async def flush(user_id: int , token: str):
 @app.get("/logout")#销毁Token，登出
 async def logout(user_id: int , token: str):
     init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('users',init)
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
         return("status" , "logout_failed")
@@ -136,8 +137,9 @@ async def logout(user_id: int , token: str):
         return("status" , "logout_failed")
     pass
 
-@app.get("/get_main_content")
-async def main_content(token: str , user_id: int , section: int):
+@app.get("/mainpage")
+async def mainpage(token: str , user_id: int ):
+
     pass
 
 ##获取前端弱鸡加密过的密码
