@@ -10,7 +10,7 @@ import random
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
-
+import Lib.supervise
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
@@ -28,6 +28,12 @@ cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
+percent = Lib.supervise.percent
+per_percent = Lib.supervise.per_percent
+logical = Lib.supervise.logical_count
+cpus = Lib.supervise.cpu_count
+total = Lib.supervise.mem.total
+free = Lib.supervise.mem.free
 
 #接入CORS
 origins = [
@@ -139,7 +145,25 @@ async def logout(user_id: int , token: str):
 
 @app.get("/mainpage")
 async def mainpage(token: str , user_id: int ):
-
+    init = "TOKEN = '" + token + "'"
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    check_item = token_check(token)
+    return_item = {
+        "status" : "OK",
+        'statistics' : {
+            "CPUS" : logical,
+            "Total_Usage" : percent,
+            "Per_Usage" : per_percent,
+            "Total_Mem" : total ,
+            "Free_Mem" : free 
+        },
+        
+    }
+    if not check_item == 'TOKEN VALID':
+        return("status","AUTH_ERROR")
+    else :
+        return return_item
     pass
 
 ##获取前端弱鸡加密过的密码
@@ -188,7 +212,11 @@ def token_create(user_id,*args):
     TOKEN_STRING = user_id + time
     encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
     init = "USER_ID = '" + user_id + "'" #此处获取user的权限
-    AUTH = SELECT_FUNC('users',init)[7]
+    AUTH = SELECT_FUNC('users',init)
+    if AUTH:
+        AUTH = AUTH[7]
+    else :
+        pass
 
     if args[0] == True:#程序的这个分支保证token不会被恶意过期
         check_item = token_check(args[1])
@@ -196,8 +224,14 @@ def token_create(user_id,*args):
         if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
-            init = "EXPIRED = True WHERE USER_ID = " + user_id
-            UPDATA_FUNC('tokens',init)
+            sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
+            cur.execute(sql)
+            token_user = cur.fetchone()
+            if token_user[3] == args[1]:
+                init = "EXPIRED = True WHERE USER_ID = " + user_id
+                UPDATA_FUNC('tokens',init)
+            else :
+                AUTH = None
     else :
         init = "USER_ID = '" + user_id + "'"
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
@@ -206,10 +240,12 @@ def token_create(user_id,*args):
         else :#当上一个token存在的时候expire它
             init = "EXPIRED = True WHERE USER_ID = " + user_id
             UPDATA_FUNC('tokens',init)#这里强制过期上一个token
-
-    INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
-    TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
-    return encrypted
+    if AUTH == None:
+        return ("info" , "token_authentication_failure")
+    else :
+        INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
+        TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
+        return encrypted
 
 def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
     init = "TOKEN = '" + token + "'"
