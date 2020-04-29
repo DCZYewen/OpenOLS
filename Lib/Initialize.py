@@ -7,7 +7,7 @@ cur = conn.cursor()
 cur.execute('''CREATE TABLE USERS (USER_ID        INT     NOT NULL,
 NAME           TEXT    NOT NULL,
 GRADE          INT     NOT NULL,
-CLASS          INT     NOT NULL,
+CLASS_ID       INT     NOT NULL,
 CHAT_ID        INT     NOT NULL,
 PASSWD         TEXT    NOT NULL,
 IS_ONLINE      BOOLEAN NOT NULL,
@@ -18,15 +18,15 @@ print("Table USERS created successfully")
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
 
 cur.execute("CREATE TABLE COURSE\
-        (COURSE_ID INT PRIMARY KEY NOT NULL,\
-        TITLE     TEXT            NOT NULL,\
-        PEOPLE    INT             NOT NULL,\
-        CLASS_IN  TEXT            NOT NULL,\
-        LISTENING INT             NOT NULL,\
-        TIME_START TEXT           NOT NULL,\
-        TIME_END   TEXT           NOT NULL)")
+        (COURSE_ID  INT PRIMARY KEY NOT NULL,\
+        TITLE       TEXT            NOT NULL,\
+        PEOPLE      INT             NOT NULL,\
+        VISIBILITY  TEXT            NOT NULL,\
+        LISTENING   INT             NOT NULL,\
+        TIME_START  TEXT           NOT NULL,\
+        TIME_END    TEXT           NOT NULL)")
 print("Table COURSE created successfully")
-#|COURSE_ID| TITLE           | PEOPLE | CLASS_IN   |LISTENING| PASSWD |TIME_START      |TIME_END        |
+#|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING| PASSWD |TIME_START      |TIME_END        |
 
 cur.execute("CREATE TABLE URLS\
             (COURSE_ID INT PRIMARY KEY NOT NULL,\
