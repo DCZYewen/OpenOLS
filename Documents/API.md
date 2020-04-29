@@ -70,6 +70,15 @@ API功能：获取到服务器延时的API
 
 ```
 
+## 地址`/mainpage`
+```
+传入：user_id: int , token: str
+传回：
+    1.鉴权成功返回信息。
+    2.鉴权失败返回信息 AUTH_ERROR 。
+
+```
+
 ## 地址`/get_main_content`
 ```
 传入：token: str , user_id: int , section: int 
