@@ -143,12 +143,14 @@ async def logout(user_id: int , token: str):
         return("status" , "logout_failed")
     pass
 
-@app.get("/mainpage")
+@app.get("/mainpage")#这个API默认了user_id存在，后续可能会增加进一步的错误处理
 async def mainpage(token: str , user_id: int ):
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
     TOKEN_ITEM = SELECT_FUNC('tokens',init)
-    check_item = token_check(token)
+    init = "USER_ID = '" + user_id + "'"
+    USER_ITEM = SELECT_FUNC('USERS',init)
+    check_item = auth_func(user_id,token)
     return_item = {
         "status" : "OK",
         'statistics' : {
@@ -158,6 +160,16 @@ async def mainpage(token: str , user_id: int ):
             "Total_Mem" : total ,
             "Free_Mem" : free 
         },
+        'information' : {
+            'name' : USER_ITEM[1],
+            'grade' : USER_ITEM[2],
+            'auth' : USER_ITEM[6],
+            'last_course': USER_ITEM[8],
+            'exit_time' : USER_ITEM[9],
+            'gender' : USER_ITEM[10],
+            'intro' : USER_ITEM[11],
+            'motto' : USER_ITEM[12]
+        }
         
     }
     if not check_item == 'TOKEN VALID':
@@ -303,3 +315,18 @@ def token_is_valid(token_create_time):#检查TOKEN是否已经过时的函数
     else :
         return False
 
+def auth_func(user_id,token):#不打算更改已经写的代码了，这里抄一份改改
+    init = "TOKEN = '" + token + "'"
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    if TOKEN_ITEM == None :#如果token不存在，抛出异常
+        return 'ERROR TOKEN NOT EXIST'
+    elif TOKEN_ITEM[2] == True :
+        return 'TOKEN EXPIRED'
+    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+        return 'TOKEN TIME INVAID'
+    elif not TOKEN_ITEM[3] == user_id:
+        return 'ID TOKEN NOT MATCH'
+    else :
+        return 'TOKEN VALID'
+    pass
