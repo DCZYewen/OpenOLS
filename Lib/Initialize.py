@@ -10,12 +10,16 @@ GRADE          INT     NOT NULL,
 CLASS_ID       INT     NOT NULL,
 CHAT_ID        INT     NOT NULL,
 PASSWD         TEXT    NOT NULL,
-IS_ONLINE      BOOLEAN NOT NULL,
 AUTH           TEXT    NOT NULL,
 ACCOUNT        TEXT    NOT NULL,
+LAST_COURSE    TEXT,
+EXIT_TIME      TEXT,
+GENDER         INT     NOT NULL,
+INTRO          TEXT    NOT NULL,
+MOTTO          TEXT    NOT NULL,
 PRIMARY KEY(USER_ID));''')
 print("Table USERS created successfully")
-#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
+#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | AUTH | ACCOUNT | LAST_COURSE|EXIT_TIME     |GENDER |INTRO    |MOTTO    |
 
 cur.execute("CREATE TABLE COURSE\
         (COURSE_ID  INT PRIMARY KEY NOT NULL,\
@@ -36,13 +40,20 @@ cur.execute("CREATE TABLE URLS\
 #|CLASS_ID| RTMP_URL     |CHAT_URL     | BOARD_URL            | 
 print("Table URLS created successfully")
 
-cur.execute("CREATE TABLE CLASSES\
-            (CLASS_ID INT PRIMARY KEY NOT NULL,\
-            GRADE    INT             NOT NULL,\
-            CLASS    INT             NOT NULL,\
-            MEMBERS  INT             NOT NULL)")
-print("Table CLASSES created successfully")
-#|201815  |2018  | 15    | 45      |
+cur.execute("CREATE TABLE RESOURCES\
+            (RESOURCE_ID INT PRIMARY KEY NOT NULL,\
+            TYPE         TEXT            NOT NULL,\
+            FILE_NAME    TEXT            NOT NULL,\
+            URL          TEXT            NOT NULL,\
+            VISIBILITY   TEXT            NOT NULL,\
+            FILE_OWNER   TEXT            NOT NULL,\
+            OWNER_ID     INT             NOT NULL,\
+            INTRO        TEXT            NOT NULL,\
+            UPLOAD_TIME  TEXT            NOT NULL,\
+            COVER_URL    TEXT            NOT NULL,\
+            SIZE         INT             NOT NULL)")
+print("Table RESOURCES created successfully")
+#|RESOURCE_ID |TYPE |FILE_NAME|URL |VISIBILITY |FILE_OWNER|OWNER_ID|INTRO  |UPLOAD_TIME   |COVER_URL    |SIZE |
 
 cur.execute("CREATE TABLE TOKENS\
             (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
