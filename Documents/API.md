@@ -76,7 +76,26 @@ API功能：获取到服务器延时的API
 传回：
     1.鉴权成功返回信息。
     2.鉴权失败返回信息 AUTH_ERROR 。
-
+{
+  "status" : "OK",
+  'statistics' : {
+    "CPUS" : logical,
+    "Total_Usage" : percent,
+    "Per_Usage" : per_percent,
+    "Total_Mem" : total ,
+    "Free_Mem" : free 
+  },
+  'information' : {
+    'name' : USER_ITEM[1],
+    'grade' : USER_ITEM[2],
+    'auth' : USER_ITEM[6],
+    'last_course': USER_ITEM[8],
+    'exit_time' : USER_ITEM[9],
+    'gender' : USER_ITEM[10],
+    'intro' : USER_ITEM[11],
+    'motto' : USER_ITEM[12]
+  } //这些information的具体信息请看英文意思和数据结构
+}
 ```
 
 ## 地址`/get_main_content`
