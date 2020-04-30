@@ -14,7 +14,7 @@ AUTH           TEXT    NOT NULL,
 ACCOUNT        TEXT    NOT NULL,
 LAST_COURSE    TEXT,
 EXIT_TIME      TEXT,
-GENDER         INT     NOT NULL,
+GENDER         TEXT     NOT NULL,
 INTRO          TEXT    NOT NULL,
 MOTTO          TEXT    NOT NULL,
 PRIMARY KEY(USER_ID));''')
@@ -30,15 +30,15 @@ cur.execute("CREATE TABLE COURSE\
         TIME_START  TEXT           NOT NULL,\
         TIME_END    TEXT           NOT NULL)")
 print("Table COURSE created successfully")
-#|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING| PASSWD |TIME_START      |TIME_END        |
+#|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING |TIME_START      |TIME_END        |
 
-cur.execute("CREATE TABLE URLS\
+cur.execute("CREATE TABLE LOCATIONS\
             (COURSE_ID INT PRIMARY KEY NOT NULL,\
             RTMP_URL  TEXT            NOT NULL,\
             CHAT_URL  TEXT            NOT NULL,\
             BOARD_URL TEXT            NOT NULL)")
 #|CLASS_ID| RTMP_URL     |CHAT_URL     | BOARD_URL            | 
-print("Table URLS created successfully")
+print("Table LOCATIONS created successfully")
 
 cur.execute("CREATE TABLE RESOURCES\
             (RESOURCE_ID INT PRIMARY KEY NOT NULL,\

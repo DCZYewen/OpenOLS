@@ -73,32 +73,32 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     result = SELECT_FUNC('USERS',init)
     if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
         if check_password_hash(result[5],real_pass):
-            if result[7]=='ADMIN':
+            if result[6]=='ADMIN':
                 login_admin_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Admin',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_admin_item)
                 return login_admin_item
-            elif result[7]=='STUDENT':
+            elif result[6]=='STUDENT':
                 login_stu_item = {"status" : "OK",
                 "redirect_url" : site_url + '/MainPage',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_stu_item)
                 return login_stu_item
-            elif result[7]=='TEACHER':
+            elif result[6]=='TEACHER':
                 login_teacher_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Teacher',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_teacher_item)
