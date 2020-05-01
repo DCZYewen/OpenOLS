@@ -19,21 +19,21 @@ hash_hey = site_settings.hash_key
 #ADD SUPER USER
 sql1 = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , 'ADMIN' , 'admin' , 000000 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 
 #ADD STU
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , false , 'STUDENT' , 'student1'
+        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 
 #ADD TEACHER
 sql2 = "\
     INSERT INTO USERS VALUES(\
-        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' , false , 'TEACHER' , 'teacher1'
+        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' ,'TEACHER' , 'teacher1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 

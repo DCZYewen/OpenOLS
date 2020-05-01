@@ -10,7 +10,7 @@ import random
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
-
+import Lib.supervise
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
@@ -28,6 +28,12 @@ cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
+percent = Lib.supervise.percent
+per_percent = Lib.supervise.per_percent
+logical = Lib.supervise.logical_count
+cpus = Lib.supervise.cpu_count
+total = Lib.supervise.mem.total
+free = Lib.supervise.mem.free
 
 #接入CORS
 origins = [
@@ -67,32 +73,32 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     result = SELECT_FUNC('USERS',init)
     if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
         if check_password_hash(result[5],real_pass):
-            if result[7]=='ADMIN':
+            if result[6]=='ADMIN':
                 login_admin_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Admin',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_admin_item)
                 return login_admin_item
-            elif result[7]=='STUDENT':
+            elif result[6]=='STUDENT':
                 login_stu_item = {"status" : "OK",
                 "redirect_url" : site_url + '/MainPage',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_stu_item)
                 return login_stu_item
-            elif result[7]=='TEACHER':
+            elif result[6]=='TEACHER':
                 login_teacher_item = {"status" : "OK",
                 "redirect_url" : site_url + '/Teacher',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[7]),
+                "AUTH" : str.upper(result[6]),
                 "tab" : 0
                 }
                 print(login_teacher_item)
@@ -122,7 +128,8 @@ async def flush(user_id: int , token: str):
 @app.get("/logout")#销毁Token，登出
 async def logout(user_id: int , token: str):
     init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('users',init)
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
         return("status" , "logout_failed")
@@ -136,8 +143,39 @@ async def logout(user_id: int , token: str):
         return("status" , "logout_failed")
     pass
 
-@app.get("/get_main_content")
-async def main_content(token: str , user_id: int , section: int):
+@app.get("/mainpage")#这个API默认了user_id存在，后续可能会增加进一步的错误处理
+async def mainpage(token: str , user_id: int ):
+    init = "TOKEN = '" + token + "'"
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    init = "USER_ID = '" + user_id + "'"
+    USER_ITEM = SELECT_FUNC('USERS',init)
+    check_item = auth_func(user_id,token)
+    return_item = {
+        "status" : "OK",
+        'statistics' : {
+            "CPUS" : logical,
+            "Total_Usage" : percent,
+            "Per_Usage" : per_percent,
+            "Total_Mem" : total ,
+            "Free_Mem" : free 
+        },
+        'information' : {
+            'name' : USER_ITEM[1],
+            'grade' : USER_ITEM[2],
+            'auth' : USER_ITEM[6],
+            'last_course': USER_ITEM[8],
+            'exit_time' : USER_ITEM[9],
+            'gender' : USER_ITEM[10],
+            'intro' : USER_ITEM[11],
+            'motto' : USER_ITEM[12]
+        }
+        
+    }
+    if not check_item == 'TOKEN VALID':
+        return("status","AUTH_ERROR")
+    else :
+        return return_item
     pass
 
 ##获取前端弱鸡加密过的密码
@@ -186,7 +224,11 @@ def token_create(user_id,*args):
     TOKEN_STRING = user_id + time
     encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
     init = "USER_ID = '" + user_id + "'" #此处获取user的权限
-    AUTH = SELECT_FUNC('users',init)[7]
+    AUTH = SELECT_FUNC('users',init)
+    if AUTH:
+        AUTH = AUTH[7]
+    else :
+        pass
 
     if args[0] == True:#程序的这个分支保证token不会被恶意过期
         check_item = token_check(args[1])
@@ -194,8 +236,14 @@ def token_create(user_id,*args):
         if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
-            init = "EXPIRED = True WHERE USER_ID = " + user_id
-            UPDATA_FUNC('tokens',init)
+            sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
+            cur.execute(sql)
+            token_user = cur.fetchone()
+            if token_user[3] == args[1]:
+                init = "EXPIRED = True WHERE USER_ID = " + user_id
+                UPDATA_FUNC('tokens',init)
+            else :
+                AUTH = None
     else :
         init = "USER_ID = '" + user_id + "'"
         TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
@@ -204,10 +252,12 @@ def token_create(user_id,*args):
         else :#当上一个token存在的时候expire它
             init = "EXPIRED = True WHERE USER_ID = " + user_id
             UPDATA_FUNC('tokens',init)#这里强制过期上一个token
-
-    INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
-    TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
-    return encrypted
+    if AUTH == None:
+        return ("info" , "token_authentication_failure")
+    else :
+        INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
+        TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
+        return encrypted
 
 def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
     init = "TOKEN = '" + token + "'"
@@ -265,3 +315,18 @@ def token_is_valid(token_create_time):#检查TOKEN是否已经过时的函数
     else :
         return False
 
+def auth_func(user_id,token):#不打算更改已经写的代码了，这里抄一份改改
+    init = "TOKEN = '" + token + "'"
+    user_id = str(user_id)
+    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    if TOKEN_ITEM == None :#如果token不存在，抛出异常
+        return 'ERROR TOKEN NOT EXIST'
+    elif TOKEN_ITEM[2] == True :
+        return 'TOKEN EXPIRED'
+    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+        return 'TOKEN TIME INVAID'
+    elif not TOKEN_ITEM[3] == user_id:
+        return 'ID TOKEN NOT MATCH'
+    else :
+        return 'TOKEN VALID'
+    pass
