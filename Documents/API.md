@@ -128,7 +128,7 @@ API调用错误：AUTH_ERROR , SECTION_INVALID , PAGE_INVALID
       "time_start" : "20200405205735",
       "time_end" : "20200405220000",
     }
-    "col3" : None,
+    "col3" : null, //Json里应该没有None
   }
 }
 失败示例：
@@ -176,5 +176,6 @@ API调用错误：token_expired , course_not_exist , token_not_match , server_er
 传入：token: str , user_id: int , course_id: int
 传回：
     1.鉴权基本同前。
-    2.
+    2.鉴权错误传回AUTH_ERROR。
+    3.
 ```
