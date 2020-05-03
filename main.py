@@ -172,6 +172,7 @@ async def mainpage(token: str , user_id: int ):
         }
         
     }
+    print(check_item)
     if not check_item == 'TOKEN VALID':
         return("status","AUTH_ERROR")
     else :
@@ -319,13 +320,14 @@ def auth_func(user_id,token):#不打算更改已经写的代码了，这里抄�
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
     TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    print(TOKEN_ITEM)
     if TOKEN_ITEM == None :#如果token不存在，抛出异常
         return 'ERROR TOKEN NOT EXIST'
     elif TOKEN_ITEM[2] == True :
         return 'TOKEN EXPIRED'
     elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
         return 'TOKEN TIME INVAID'
-    elif not TOKEN_ITEM[3] == user_id:
+    elif not TOKEN_ITEM[4] == int(user_id):
         return 'ID TOKEN NOT MATCH'
     else :
         return 'TOKEN VALID'
