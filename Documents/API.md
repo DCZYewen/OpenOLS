@@ -100,26 +100,58 @@ API功能：获取到服务器延时的API
 
 ## 地址`/get_main_content`
 ```
-传入：token: str , user_id: int , section: int 
+传入：token: str , user_id: int , section: int , page : int
 传回：
     1.当鉴权成功的时候（user_id与token对应，token未过期），返回需要显示的主要内容
     2.当鉴权失败的时候返回 AUTH_ERROR
-    3.如果需要获取的section超出范围，返回错误信息section_invalid
-    4.如果数据库内部出现错误返回server_error
+    3.如果需要获取的section超出范围，返回错误信息SECTION_INVALID
+    4.如果需要获取的page超出范文，返回错误信息PAGE_INVALID
 参数解释：user_id: int 用户ID , token: str 登录时获取的或者从 get_now_token获取的上一个token。
-API调用错误：token_expired , section_invalid , token_not_match , server_error
+API调用错误：AUTH_ERROR , SECTION_INVALID , PAGE_INVALID
 成功示例：
 {
   "status" : "OK",
-  "people" : 43 /////等等等等懒得写
+  "section" : "stream",//下附section表
+  "page" : "1",//为了方便人类阅读，page的起始页是1
+  "content" : {
+    "col1" : {
+      "title" : "一节从来不存在的网课",
+      "people" : 45,
+      "listening" : 25,
+      "time_start" : "20200405205735",
+      "time_end" : "20200405220000",
+    }
+    "col2" :{
+      "title" : "第二节从来不存在的网课",
+      "people" : 42,
+      "listening" : 20,
+      "time_start" : "20200405205735",
+      "time_end" : "20200405220000",
+    }
+    "col3" : None,
+  }
 }
 失败示例：
 {
   "status" : "AUTH_ERROR",
-  "information" : "token_expired"//返回进一步的错误信息方便处理
 }
 
-注意：此API用于获取三个权限，各个账户的主界面信息。返回值根据user_id对应的权限等级。权限等级已在Login时告知。处理返回值时请自行根据权限判断。
+注意：此API获取数据，根据section和page进行定位。
+
+section表
++---+--------------+
+|1  |直播课程       |
++------------------+
+|2  |录播课程       |
++------------------+
+|3  |收藏夹         |
++------------------+
+|4  |FusionShare   |
++------------------+
+|5  |Reminder      |
++------------------+
+|6  |TimeLine      |
++------------------+
 ```
 ## 地址`/get_live_addr`
 ```
