@@ -37,13 +37,13 @@ API功能：获取到服务器延时的API
     2.当身份验证成功时返回 json1①
 参数解释：username: str 用户名 , password: str 密码 , time: str 当前时间指 var myDate = new Date();var Sec = myDate.getSeconds(); 中的Sec
 
-①["status" : "OK",
+①{"status" : "OK",
   "redirect_url" : "http://dev.sunboy.site/admin",
   "user_id" : 90155664
   "token" : "5a39e9e146c9"
   "auth" : "ADMIN",
   "tab" : 0//前端可以忽略，因为没P用哈哈哈哈
-] // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
+ } // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
 注意：redirect_url可以根据auth变化，或者统一，再由前端判断。
 ```
 
@@ -51,13 +51,51 @@ API功能：获取到服务器延时的API
 ```
 传入：user_id: int , token: str
 传回：
-    1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token。
+    1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token，获取一个与user_id相对的新token，同时旧的token会被标记为失效。
     2.当鉴权失败的时候（上述条件任一不符合），返回token_authentication_failure
 参数解释：user_id: int 用户ID , token: str 登录时获取的token或者从本API获取的上一个token。注意！ 一旦新的token被注册，上一个token会立刻失效。
-["status" : "OK",//或者可能是token_authentication_failure
+{"status" : "OK",//或者可能是token_authentication_failure
   "user_id" : 90155664//传回user_id，请double check ID是否正确。
   "token" : "5a39e9e14129"//调用此API时注意，如果登陆时获取了权限是ADMIN，那新的ID也自动是ADMIN作为token权限。
-]
+}
+```
+
+## 地址`/logout`
+```
+传入：user_id: int , token: str
+传回：
+    1.当鉴权成功的时候，（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token。
+    2.鉴权失败的时候抛出 logout_failed 。
+{"status" : "OK",//或者可能是logout_failed}
+
+```
+
+## 地址`/mainpage`
+```
+传入：user_id: int , token: str
+传回：
+    1.鉴权成功返回信息。
+    2.鉴权失败返回信息 AUTH_ERROR 。
+{
+  "status" : "OK",
+  'statistics' : {
+    "CPUS" : logical,
+    "Total_Usage" : percent,
+    "Per_Usage" : per_percent,
+    "Total_Mem" : total ,
+    "Free_Mem" : free 
+  },
+  'information' : {
+    'name' : USER_ITEM[1],
+    'grade' : USER_ITEM[2],
+    'auth' : USER_ITEM[6],
+    'last_course': USER_ITEM[8],
+    'exit_time' : USER_ITEM[9],
+    'gender' : USER_ITEM[10],
+    'intro' : USER_ITEM[11],
+    'motto' : USER_ITEM[12]
+  } //这些information的具体信息请看英文意思和数据结构
+}
 ```
 
 ## 地址`/get_main_content`
@@ -71,15 +109,15 @@ API功能：获取到服务器延时的API
 参数解释：user_id: int 用户ID , token: str 登录时获取的或者从 get_now_token获取的上一个token。
 API调用错误：token_expired , section_invalid , token_not_match , server_error
 成功示例：
-[
+{
   "status" : "OK",
   "people" : 43 /////等等等等懒得写
-]
+}
 失败示例：
-[
+{
   "status" : "AUTH_ERROR",
   "information" : "token_expired"//返回进一步的错误信息方便处理
-]
+}
 
 注意：此API用于获取三个权限，各个账户的主界面信息。返回值根据user_id对应的权限等级。权限等级已在Login时告知。处理返回值时请自行根据权限判断。
 ```

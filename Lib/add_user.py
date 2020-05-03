@@ -16,18 +16,33 @@ cur = conn.cursor()
 aes_key = site_settings.aes_key
 hash_hey = site_settings.hash_key
 
-
-sql = "\
+#ADD SUPER USER
+sql1 = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , false , 'ADMIN' , 'admin'
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , 'ADMIN' , 'admin' , 000000 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 
+#ADD STU
+sql = "\
+    INSERT INTO USERS VALUES(\
+        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
+    )
+'''
 
-cur.execute(sql)
+#ADD TEACHER
+sql2 = "\
+    INSERT INTO USERS VALUES(\
+        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' ,'TEACHER' , 'teacher1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
+    )
+'''
+
 #USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
+cur.execute(sql1)
+cur.execute(sql)
+cur.execute(sql2)
 conn.commit()
-print("Super User Created , super account admin super password admin , Please CHANGE your password in the site .")
+print("User Created , super account admin super password admin .\n Test Teacher : Teast_Teacher1 teacher1 \n Test Student Test_Stu1 student1")
 conn.close()
 
 
