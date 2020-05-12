@@ -143,7 +143,7 @@ async def logout(user_id: int , token: str):
         return("status" , "logout_failed")
     pass
 
-@app.get("/mainpage")#这个API默认了user_id存在，后续可能会增加进一步的错误处理
+@app.get("/mainpage")#这个API默认了user_id存在，后续可能会增加进一步的错误处理 patched
 async def mainpage(token: str , user_id: int ):
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
@@ -178,6 +178,11 @@ async def mainpage(token: str , user_id: int ):
         return("status" , "AUTH_ERROR")
     else :
         return return_item
+
+@app.get("/get_main_content")
+async def maincontent(token: str , user_id: int , section: int , page : int):
+    user_id = str(user_id)
+    
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
