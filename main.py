@@ -85,7 +85,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
                 return login_admin_item
             elif result[6]=='STUDENT':
                 login_stu_item = {"status" : "OK",
-                "redirect_url" : site_url + '/MainPage',
+                "redirect_url" : site_url + '/web/Student',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
                 "AUTH" : str.upper(result[6]),
@@ -170,14 +170,14 @@ async def mainpage(token: str , user_id: int ):
             'intro' : USER_ITEM[11],
             'motto' : USER_ITEM[12]
         }
-        
     }
     print(check_item)
     if not check_item == 'TOKEN VALID':
         return("status","AUTH_ERROR")
+    elif USER_ITEM == None:
+        return("status" , "AUTH_ERROR")
     else :
         return return_item
-    pass
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
