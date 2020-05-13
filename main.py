@@ -125,7 +125,7 @@ async def flush(user_id: int , token: str):
         }#构造返回结构
         return back_item
 
-@app.get("/check_valid")#用于程序传入数据的鉴权或者外部程序的
+@app.get("/check_valid")#用于程序传入数据的鉴权或者外部程序的回调等
 async def check_valid(user_id: int , token: str):
     user_id = str(user_id)
     token = token.replace(' ','+')
