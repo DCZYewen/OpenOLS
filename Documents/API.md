@@ -60,6 +60,18 @@ API功能：获取到服务器延时的API
 }
 ```
 
+## 地址`check_valid`
+```
+传入：user_id: int , token: str
+传回：
+    1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token，获取一个与user_id相对的新token，同时旧的token会被标记为失效。
+    2.当鉴权失败的时候（上述条件任一不符合），返回token_authentication_failure
+参数解释：user_id: int 用户ID , token: str 登录时获取的token或者从本API获取的上一个token。
+{
+  "status" : "OK",//或者可能是token_authentication_failure
+}
+```
+
 ## 地址`/logout`
 ```
 传入：user_id: int , token: str

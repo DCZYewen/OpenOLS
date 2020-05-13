@@ -125,10 +125,27 @@ async def flush(user_id: int , token: str):
         }#构造返回结构
         return back_item
 
+@app.get("/check_valid")#用于程序传入数据的鉴权或者外部程序的
+async def check_valid(user_id: int , token: str):
+    user_id = str(user_id)
+    token = token.replace(' ','+')
+    init = "TOKEN = '" + token + "'"
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    check_item = token_check(token)
+    if TOKEN_ITEM==None :
+        return("status" , "token_authentication_failure")
+    elif not check_item == 'TOKEN VALID':
+        return("status" , "token_authentication_failure")
+    elif check_item == 'TOKEN VALID':
+        return("status","OK")
+    else :
+        return("status" , "token_authentication_failure")
+
 @app.get("/logout")#销毁Token，登出
 async def logout(user_id: int , token: str):
-    init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
+    token = token.replace(' ','+')
+    init = "TOKEN = '" + token + "'"
     TOKEN_ITEM = SELECT_FUNC('tokens',init)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
@@ -147,6 +164,7 @@ async def logout(user_id: int , token: str):
 async def mainpage(token: str , user_id: int ):
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
+    token = token.replace(' ','+')
     TOKEN_ITEM = SELECT_FUNC('tokens',init)
     init = "USER_ID = '" + user_id + "'"
     USER_ITEM = SELECT_FUNC('USERS',init)
@@ -182,6 +200,7 @@ async def mainpage(token: str , user_id: int ):
 @app.get("/get_main_content")
 async def maincontent(token: str , user_id: int , section: int , page : int):
     user_id = str(user_id)
+    token = token.replace(' ','+')
     
 
 ##获取前端弱鸡加密过的密码
