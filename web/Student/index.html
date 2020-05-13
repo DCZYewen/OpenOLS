@@ -25,6 +25,8 @@
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
+    <script src="./assets/js/api.js"></script>
+
 </head>
 
 <body>
@@ -216,9 +218,12 @@
                                     <img class="align-self-center rounded-circle mr-3" style="width:85px; height:85px;" alt="" src="images/admin.jpg">
                                 </a>
                                 <div class="media-body">
-                                    <h2 class="text-light display-6">许凯博</h2>
+                                    <h2 class="text-light display-6" id="name"></h2>
                                     <hr>
                                     <p>高二年级29班 学号90155555</p>
+                                    <script  type="text/javascript">
+                                        mainpage_info()
+                                    </script>
                                 </div>
                             </div>
                         </div>
