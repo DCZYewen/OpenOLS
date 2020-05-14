@@ -12,7 +12,6 @@ function login() {
     } else {
         var myDate = new Date();
         var Sec = myDate.getSeconds(); 
-        var Back_Json;
         var encrypt_passwd = window.btoa(Sec + pass.value + Sec);
         var url = API_URL + '/login/?username=' + username.value + '&password=' + encrypt_passwd + '&time=' + Sec;
 
@@ -24,6 +23,12 @@ function login() {
                 $.cookie('token', data.token , {path:'/web/Student/'});
                 $.cookie('auth', data.AUTH , {path:'/web/Student/'});
                 $.cookie('user_id', data.user_id , {path:'/web/Student/'});
+                window.location.replace(data.redirect_url);
+            }
+            else if (data.status == 'OK' && data.AUTH == 'TEACHER'){
+                $.cookie('token', data.token , {path:'/web/Teacher/'});
+                $.cookie('auth', data.AUTH , {path:'/web/Teacher/'});
+                $.cookie('user_id', data.user_id , {path:'/web/Teacher/'});
                 window.location.replace(data.redirect_url);
             }
             else{

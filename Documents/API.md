@@ -41,7 +41,7 @@ API功能：获取到服务器延时的API
   "redirect_url" : "http://dev.sunboy.site/admin",
   "user_id" : 90155664
   "token" : "5a39e9e146c9"
-  "auth" : "ADMIN",
+  "AUTH" : "ADMIN",
   "tab" : 0//前端可以忽略，因为没P用哈哈哈哈
  } // 解释起来大概是状态OK，将被重定向到 $url 带有token 5a39e9e146c 身份是 ADMIN 打开tab 0
 注意：redirect_url可以根据auth变化，或者统一，再由前端判断。
@@ -54,7 +54,8 @@ API功能：获取到服务器延时的API
     1.当鉴权成功的时候（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token，获取一个与user_id相对的新token，同时旧的token会被标记为失效。
     2.当鉴权失败的时候（上述条件任一不符合），返回token_authentication_failure
 参数解释：user_id: int 用户ID , token: str 登录时获取的token或者从本API获取的上一个token。注意！ 一旦新的token被注册，上一个token会立刻失效。
-{"status" : "OK",//或者可能是token_authentication_failure
+{
+  "status" : "OK",//或者可能是token_authentication_failure
   "user_id" : 90155664//传回user_id，请double check ID是否正确。
   "token" : "5a39e9e14129"//调用此API时注意，如果登陆时获取了权限是ADMIN，那新的ID也自动是ADMIN作为token权限。
 }
@@ -78,7 +79,10 @@ API功能：获取到服务器延时的API
 传回：
     1.当鉴权成功的时候，（user_id与token对应，且token的创建日期早于目前客户端日期（防止改日期复用token。
     2.鉴权失败的时候抛出 logout_failed 。
-{"status" : "OK",//或者可能是logout_failed}
+{
+  "status" : "OK",//或者可能是logout_failed
+  "auth" : "STUDENT"//三种角色
+}
 
 ```
 
@@ -93,7 +97,7 @@ API功能：获取到服务器延时的API
   'statistics' : {
     "CPUS" : logical,
     "Total_Usage" : percent,
-    "Per_Usage" : per_percent,
+    "Per_Usage" : per_percent,//返回数组，不用可以丢弃
     "Total_Mem" : total ,
     "Free_Mem" : free 
   },
