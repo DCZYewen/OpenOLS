@@ -93,7 +93,7 @@ API功能：获取到服务器延时的API
   'statistics' : {
     "CPUS" : logical,
     "Total_Usage" : percent,
-    "Per_Usage" : per_percent,
+    "Per_Usage" : per_percent,//返回数组，不用可以丢弃
     "Total_Mem" : total ,
     "Free_Mem" : free 
   },
