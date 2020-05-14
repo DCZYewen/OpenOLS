@@ -12,7 +12,7 @@
     <title>主页 - OpenOLS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="../../favicon.ico">
     <link rel="stylesheet" href="vendors/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="vendors/themify-icons/css/themify-icons.css">
@@ -26,6 +26,7 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
     <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/jquery-1.8.0.js"></script>
 
 </head>
 
@@ -173,7 +174,7 @@
                             <div class="stat-icon dib"><i class="ti-package text-success border-success"></i></div>
                             <div class="stat-content dib">
                                 <div class="stat-text">今日课程</div>
-                                <div class="stat-digit">11</div>
+                                <div class="stat-digit" id=>无数据</div>
                             </div>
                         </div>
                     </div>
@@ -187,7 +188,7 @@
                             <div class="stat-icon dib"><i class="ti-pencil text-primary border-primary"></i></div>
                             <div class="stat-content dib">
                                 <div class="stat-text">我的作业</div>
-                                <div class="stat-digit">45</div>
+                                <div class="stat-digit">无数据</div>
                             </div>
                         </div>
                     </div>
@@ -201,7 +202,7 @@
                             <div class="stat-icon dib"><i class="ti-user text-warning border-warning"></i></div>
                             <div class="stat-content dib">
                                 <div class="stat-text">当前在线</div>
-                                <div class="stat-digit">14</div>
+                                <div class="stat-digit">无数据</div>
                             </div>
                         </div>
                     </div>
@@ -218,12 +219,12 @@
                                     <img class="align-self-center rounded-circle mr-3" style="width:85px; height:85px;" alt="" src="images/admin.jpg">
                                 </a>
                                 <div class="media-body">
-                                    <h2 class="text-light display-6" id="name"></h2>
+                                    <h2 class="text-light display-6" id="stu_name">正在加载...</h2>
                                     <hr>
-                                    <p>高二年级29班 学号90155555</p>
-                                    <script  type="text/javascript">
-                                        mainpage_info()
-                                    </script>
+                                    <p id="grade_n_sex">正在加载...</p>
+                                    <p id="intro">正在加载...</p>
+                                    <p id="motto">正在加载...</p>
+
                                 </div>
                             </div>
                         </div>
@@ -232,12 +233,12 @@
                             <li class="list-group-item">
                                 <div class="clearfix">
                                     <i class="fa fa-book bg-flat-color-4 p-3 font-2xl mr-3 float-left text-light"></i>
-                                    <div class="h5 text-secondary mb-0 mt-1">数学：从入门到入土</div>
+                                    <div class="h5 text-secondary mb-0 mt-1" id="last_class">正在加载...</div>
                                     <div class="text-muted text-uppercase font-weight-bold font-xs small">上次课程</div>
                                 </div>
                                 <div class="clearfix">
                                     <i class="fa fa-clock-o bg-flat-color-4 p-3 font-2xl mr-3 float-left text-light"></i>
-                                    <div class="h5 text-secondary mb-0 mt-1">11:45:14</div>
+                                    <div class="h5 text-secondary mb-0 mt-1" id="exit_time">正在加载...</div>
                                     <div class="text-muted text-uppercase font-weight-bold font-xs small">退出时间</div>
                                 </div>
                             </li>
@@ -254,26 +255,25 @@
                         <h4>服务器数据</h4>
                     </div>
                     <div class="card-body">
-                        <div class="text-muted text-uppercase font-weight-bold font-xs small">CPU数量</div>
-                        <div class="progress mb-2" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                        </div>
                         <div class="text-muted text-uppercase font-weight-bold font-xs small">CPU占用</div>
                         <div class="progress mb-2" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                            <div id="pb_CPU_usage" class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">正在加载...</div>
                         </div>
-                        <div class="text-muted text-uppercase font-weight-bold font-xs small">内存数量</div>
+                        <div class="text-muted text-uppercase font-weight-bold font-xs small">总内存</div>
                         <div class="progress mb-2" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                            <div id="pb_MEM_total" class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">正在加载...</div>
                         </div>
                         <div class="text-muted text-uppercase font-weight-bold font-xs small">内存占用</div>
                         <div class="progress mb-2" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                            <div id="pb_MEM_usage" class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">正在加载...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <script  type="text/javascript">
+                load_mainpage_info()
+            </script> <!-- get infomation from api -->
 
         </div> <!-- .content -->
     </div><!-- /#right-panel -->

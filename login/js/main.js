@@ -15,6 +15,9 @@ function login() {
         var Back_Json;
         var encrypt_passwd = window.btoa(Sec + pass.value + Sec);
         var url = API_URL + '/login/?username=' + username.value + '&password=' + encrypt_passwd + '&time=' + Sec;
+
+        alert(url)
+
         $.get(url,function callback(data){
             console.log(data);
             if (data.status == 'OK' && data.AUTH == 'STUDENT'){
