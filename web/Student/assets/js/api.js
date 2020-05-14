@@ -30,8 +30,8 @@ function formatFileSize(fileSize) {
 
 function load_mainpage_info() {
 
-    var Token = getCookie(token)
-    var User_Id = getCookie(user_id)
+    var Token = getCookie("token")
+    var User_Id = getCookie("user_id")
 
     // var Token = "rSPnzG6Cf%2FHayX2pbsjoxoAn4ZwK6Ui7oz6bA%2FC1p2Y%3D";
     // var User_Id = 99999998;
