@@ -61,7 +61,7 @@ API功能：获取到服务器延时的API
 }
 ```
 
-## 地址`check_valid`
+## 地址`/check_valid`
 ```
 传入：user_id: int , token: str
 传回：
