@@ -33,6 +33,10 @@ function load_mainpage_info() {
     var Token = getCookie("token")
     var User_Id = getCookie("user_id")
 
+    if(!Token || !User_Id){
+        goHome()
+    }
+
     var url = API_URL + '/mainpage/?user_id=' + User_Id + '&token=' + Token;
 
     $.get(url,function callback(data){
