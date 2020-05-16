@@ -2,39 +2,50 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>flv.js demo</title>
-    <script src="./play.js"></script>
-    <script src="./flv.js"></script>
-    <link href="./style.css" rel="stylesheet" type="text/css"/>
+    <script src="./js/play.js"></script>
+    <script src="./js/flv.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <link href="./css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+
 </head>
 <body>
+
+    <div class="container">
+        
+        <div class="media boader p-3">
+            <video id="videoElement" class="video-js" controls autoplay width="100%" height="100%">Your browser is too old which doesn't support HTML5 video.</video>
+        </div>
+
+        <br>
+        <div class="controls" style="margin-left : auto; margin-right: auto;">
+            <button onclick="flv_start()" class="btn btn-light">开始</button>
+            <button onclick="flv_pause()" class="btn btn-light">暂停</button>
+            <button onclick="flv_destroy()" class="btn btn-warning">停止</button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">简单的卡片</div>
+        </div>
+    </div>
+
     <script>
         var player = document.getElementById('videoElement');
         if (flvjs.isSupported()) {
             var flvPlayer = flvjs.createPlayer({
                 type: 'flv',
-                "isLive": true,//<====加个这个 
-                url: 'http://hbnd.metalkgstudio.club:8088/live/livestream.flv',//<==自行修改
-
+                "isLive": true,
+                url: 'http://hbnd.metalkgstudio.club:8088/live/livestream.flv',
             });
             flvPlayer.attachMediaElement(videoElement);
             flvPlayer.load(); //加载
             flv_start();
         }
     </script>
-    
-    <div class="mainContainer">
-        <video id="videoElement" class="centeredVideo" controls autoplay width="1024" height="576">Your browser is too old which doesn't support HTML5 video.</video>
-    </div>
-    <br>
-    <div class="controls">
-        <!--<button onclick="flv_load()">加载</button>-->
-        <button onclick="flv_start()">开始</button>
-        <button onclick="flv_pause()">暂停</button>
-        <button onclick="flv_destroy()">停止</button>
-        <input style="width:100px" type="text" name="seekpoint" />
-        <button onclick="flv_seekto()">跳转</button>
-    </div>
+
 </body>
 
 </html>

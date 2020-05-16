@@ -1,4 +1,3 @@
-
 function flv_start() {
     player.play();
 }
