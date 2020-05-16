@@ -213,6 +213,11 @@ async def maincontent(token: str , user_id: int , section: int , page : int):
     user_id = str(user_id)
     token = token.replace(' ','+')
     
+@app.get("/fetch_course_by_id")
+async def fetch_course_by_id(token: str , user_id: int , course_id : int):
+
+    pass
+
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
@@ -367,3 +372,33 @@ def auth_func(user_id,token):#不打算更改已经写的代码了，这里抄�
     else :
         return 'TOKEN VALID'
     pass
+
+def resolve_visibility(visibility):#返回可见课程的列表组
+    visibility = str(visibility)#强制类型转换
+    resolved = visibility.split("/s",-1)
+    return resolved
+
+def totalAuth(user_id , token , ):
+    token = token.replace(' ','+')
+    init = "TOKEN = '" + token + "'"
+    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    check_item = token_check(token)
+    if TOKEN_ITEM==None :
+        return("status" , "token_authentication_failure")
+    elif not check_item == 'TOKEN VALID':
+        return("status" , "token_authentication_failure")
+    elif check_item == 'TOKEN VALID':
+        init = "USER_ID = '" + user_id + "'"
+        result = SELECT_FUNC('USERS',init)
+        if result == None:
+            returnItem = {
+                "status" : "token_authentication_failure"
+            }
+        else :
+            returnItem = {
+                "status" : "ok",
+                "auth" : str.upper(result[6])
+            }
+        return(returnItem)
+    else :
+        return("status" , "token_authentication_failure")
