@@ -10,6 +10,20 @@ function getCookie(cname) {
     return "";
 }
 
+function setCourceName(token, userid, courseid) {
+    
+    var url = API_URL + '/fetch_course_by_id/?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+
+    $.get(url,function callback(data){
+        if (data.status == 'OK'){
+            document.getElementById("last_class").innerHTML = data.title
+        }
+        else{
+            alert("获取课程信息失败！");
+        }
+    });
+}
+
 function formatFileSize(fileSize) { //Format capacity func
     if (fileSize < 1024) {
         return fileSize + 'B';
@@ -33,26 +47,28 @@ function load_mainpage_info() {
     var Token = getCookie("token")
     var User_Id = getCookie("user_id")
 
-    // var Token = "rSPnzG6Cf%2FHayX2pbsjoxoAn4ZwK6Ui7oz6bA%2FC1p2Y%3D";
-    // var User_Id = 99999998;
+    Token = "21HfKrQJO8S3Pa2pSRZbjUkFE%2F7amDgCJDvTu6BFdV0%3D"
+    User_Id = "99999998"
+
+    if(!Token || !User_Id){
+        goHome()
+        return
+    }
 
     var url = API_URL + '/mainpage/?user_id=' + User_Id + '&token=' + Token;
-    
-    // alert(url)
 
     $.get(url,function callback(data){
-        console.log(data);
         if (data.status == 'OK'){
             document.getElementById("stu_name").innerHTML = data.information.name;
             document.getElementById("grade_n_sex").innerHTML = data.information.grade + '级学生 | ' + data.information.gender;
 
             document.getElementById("intro").innerHTML = data.information.intro
             document.getElementById("motto").innerHTML = data.information.motto;
-
-            document.getElementById("last_class").innerHTML = data.information.last_course
+            
+            setCourceName(Token, User_Id, data.information.last_course)            
             document.getElementById("exit_time").innerHTML = data.information.exit_time
 
-            var CPU_Usage = data.statistics.Total_Usage + "%"
+            var CPU_Usage = data.statistics.Total_Usage.toFixed(1) + "%"
             var MEM_Total = formatFileSize(data.statistics.Total_Mem)
             var MEM_Usage = (data.statistics.Total_Mem - data.statistics.Free_Mem )/ data.statistics.Total_Mem * 100
             MEM_Usage = MEM_Usage.toFixed(1) + "%" //Gemini : Fixed display issue #
@@ -71,6 +87,4 @@ function load_mainpage_info() {
         }
     });
 
-
 }
-
