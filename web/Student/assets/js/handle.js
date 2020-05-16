@@ -1,5 +1,5 @@
 //to mzWyt This is a lib for dealing with the token etc.
-pageUrl = 'http://dev.sunboiy.site'
+pageUrl = 'http://dev.sunboy.site'
 loginPanel = pageUrl + '/login'
 
 function flushToken(token , user_id){
