@@ -10,7 +10,7 @@ function getCookie(cname) {
     return "";
 }
 
-function formatFileSize(fileSize) {
+function formatFileSize(fileSize) { //Format capacity func
     if (fileSize < 1024) {
         return fileSize + 'B';
     } else if (fileSize < (1024*1024)) {
@@ -54,8 +54,8 @@ function load_mainpage_info() {
 
             var CPU_Usage = data.statistics.Total_Usage + "%"
             var MEM_Total = formatFileSize(data.statistics.Total_Mem)
-            var MEM_Usage = data.statistics.Free_Mem / data.statistics.Total_Mem * 100
-            MEM_Usage = MEM_Usage.toFixed(1) + "%"
+            var MEM_Usage = (data.statistics.Total_Mem - data.statistics.Free_Mem )/ data.statistics.Total_Mem * 100
+            MEM_Usage = MEM_Usage.toFixed(1) + "%" //Gemini : Fixed display issue #
         
             document.getElementById("pb_CPU_usage").style = "width: " + CPU_Usage + ";"
             document.getElementById("pb_CPU_usage").innerHTML = CPU_Usage
@@ -73,3 +73,4 @@ function load_mainpage_info() {
 
 
 }
+

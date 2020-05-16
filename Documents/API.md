@@ -61,7 +61,7 @@ API功能：获取到服务器延时的API
 }
 ```
 
-## 地址`check_valid`
+## 地址`/check_valid`
 ```
 传入：user_id: int , token: str
 传回：
@@ -169,6 +169,28 @@ section表
 |6  |TimeLine      |
 +------------------+
 ```
+
+## 地址`/fetch_course_by_id`
+```
+传入：token: str , user_id: int , course_id: int
+传回：
+    1.鉴权信息。
+    2.所获取id课程的基本信息。
+注：这个API大概率会在直播课程内部和主页显示最近一课用。显示传回什么东西受到数据的约束
+如果user_id对应的班级对该班级并不可见，API会返回错误。如果course_id并不存在，返回错误。
+
+成功示例：
+{
+  "status" : "OK",//或者是course_id_invalid或者是invisible_to_current_user
+  "title" : "一节不存在的网课",
+  "people" : "42",
+  "listening" : "23",
+  "time_start" : "2002022312124500",
+  "time_end" : "2020022312124500"
+}
+
+```
+
 ## 地址`/get_live_addr`
 ```
 传入：token: str , user_id: int , course_id: int
@@ -179,12 +201,12 @@ section表
 API调用错误：token_expired , course_not_exist , token_not_match , server_error , user_not_in_class（这个课程在数据库存在，但用户所在的班级并不是课程面向的班级 ，一般情况下这个错误并不会出现，因为错误的course_id不回被返回到前端去，只是为了防止有人硬改）, course_ended ,（同上，一般不会出现） , course_not_started（可能会出现，因为预定要上的课也会被返回前端），user_multi_course （一次正确的调用API会导致该直播间人数+1，同时刷新用户的 'IS_ONLINE"状态，如果该用户的 'IS_ONLINE'是True，则会返回本信息，禁止一个用户同时上两门课。如果上一节课退出，服务器会在15秒钟内探测到并重置该用户的 'IS_ONLINE'状态，同时如果课程到达时间，该状态也会被重置） 。
 失败示例基本同上
 成功示例：
-[
+{
   "status" : "OK",
   "rtmp_url" : "rtmp://site.com/live/cid12849752",
   "chat_url" : "ws://site.com/cid12321944",
   "board_url" : "http://example.com" //这项没鸡儿用
-]
+}
 ```
 
 ## 地址`/get_static_resourse`

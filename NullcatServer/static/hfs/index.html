@@ -1,0 +1,79 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="js/jquery.min.js"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script src="js/bootstrap.min.js"></script>
+<script src="js/popper.min.js"></script>
+<link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css"/>
+<script src="js/fileinput.js" type="text/javascript"></script>
+<script src="js/main.js" type="text/javascript"></script>
+
+</head>
+
+	<body>
+		<div class="container">
+			<div class="jumbotron text-center">
+			  <h3>OpenOLS资源中心 基于NullcatServer</h3>
+			</div>
+			
+			<table class="table table-hover">
+				<thead id="main_table">
+				  <tr>
+					<th>File Name</th>
+					<th>Size</th>
+					<th>Create Date</th>
+					<th>Type</th>
+				  </tr>
+				</thead>
+				<tbody id="tbMain"></tbody>
+			</table>
+			
+			<div id='div1'>
+			</div>
+			
+			<div class="page-header">
+				<h2>Upload</h2>
+			</div>
+			<form enctype="multipart/form-data">
+				<input id="file-0a" class="file" type="file" multiple data-min-file-count="6">
+				<br>
+				<button type="submit" class="btn btn-primary">Submit</button>
+				<button type="reset" class="btn btn-default">Reset</button>
+			</form>
+			
+			
+		</div>
+	</body>
+	
+
+	
+<script>
+	get_file_list();
+</script>
+
+<script>
+    //准备附件上传的样式
+    $("#file-0a").fileinput({
+        language: 'en',
+        showUpload: true, //是否显示上传按钮
+        allowedFileExtensions: ['*']
+    });
+    $(".btn-warning").on('click', function () {
+        if ($('#file-4').attr('disabled')) {
+            $('#file-4').fileinput('enable');
+        } else {
+            $('#file-4').fileinput('disable');
+        }
+    });
+
+    $(document).ready(function () {
+        $("#test-upload").fileinput({
+            'showPreview': false,
+            'allowedFileExtensions': ['*'],
+            'elErrorContainer': '#errorBlock'
+        });
+    });
+</script>
+</html>
