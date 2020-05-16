@@ -251,7 +251,8 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
                     "people" : result[2],
                     "listening" : result[4],
                     "time_start" : result[5],
-                    "time_end" : result[6]
+                    "time_end" : result[6],
+                    "is_end" : False
                 }
                 return returnItem
             else :

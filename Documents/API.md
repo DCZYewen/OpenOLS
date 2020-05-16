@@ -186,7 +186,8 @@ section表
   "people" : "42",
   "listening" : "23",
   "time_start" : "2002022312124500",
-  "time_end" : "2020022312124500"
+  "time_end" : "2020022312124500",
+  "is_end" : True
 }
 
 ```
