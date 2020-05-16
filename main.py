@@ -4,9 +4,8 @@ from Crypto.Cipher import AES
 import psycopg2
 import sys
 import string
-import time
+import time,_thread,random
 import site_settings
-import random
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
