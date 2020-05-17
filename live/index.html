@@ -1,92 +1,51 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>flv.js demo</title>
-    <style>
-        .mainContainer {
-            display: block;
-            width: 1024px;
-            margin-left: auto;
-            margin-right: auto;
-        }
+    <script src="./js/play.js"></script>
+    <script src="./js/flv.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <link href="./css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 
-        .urlInput {
-            display: block;
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 8px;
-            margin-bottom: 8px;
-        }
-
-        .centeredVideo {
-            display: block;
-            width: 100%;
-            height: 576px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: auto;
-        }
-
-        .controls {
-            display: block;
-            width: 100%;
-            text-align: left;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
 </head>
 <body>
-    <div class="mainContainer">
-        <video id="videoElement" class="centeredVideo" controls autoplay width="1024" height="576">Your browser is too old which doesn't support HTML5 video.</video>
+
+    <div class="container">
+        
+        <div class="media boader p-3">
+            <video id="videoElement" class="video-js" controls autoplay width="100%" height="100%">Your browser is too old which doesn't support HTML5 video.</video>
+        </div>
+
+        <br>
+        <div class="controls" style="margin-left : auto; margin-right: auto;">
+            <button onclick="flv_start()" class="btn btn-light">开始</button>
+            <button onclick="flv_pause()" class="btn btn-light">暂停</button>
+            <button onclick="flv_destroy()" class="btn btn-warning">停止</button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">简单的卡片</div>
+        </div>
     </div>
-    <br>
-    <div class="controls">
-        <!--<button onclick="flv_load()">加载</button>-->
-        <button onclick="flv_start()">开始</button>
-        <button onclick="flv_pause()">暂停</button>
-        <button onclick="flv_destroy()">停止</button>
-        <input style="width:100px" type="text" name="seekpoint" />
-        <button onclick="flv_seekto()">跳转</button>
-    </div>
-    <script src="./flv.js"></script>
+
     <script>
         var player = document.getElementById('videoElement');
         if (flvjs.isSupported()) {
             var flvPlayer = flvjs.createPlayer({
                 type: 'flv',
-                "isLive": true,//<====加个这个 
-                url: 'http://cn2.metalkgstudio.club:8086/live/livestream.flv',//<==自行修改
-
+                "isLive": true,
+                url: 'http://hbnd.metalkgstudio.club:8088/live/livestream.flv',
             });
             flvPlayer.attachMediaElement(videoElement);
             flvPlayer.load(); //加载
             flv_start();
         }
-
-        function flv_start() {
-            player.play();
-        }
-
-        function flv_pause() {
-            player.pause();
-        }
-
-        function flv_destroy() {
-            player.pause();
-            player.unload();
-            player.detachMediaElement();
-            player.destroy();
-            player = null;
-        }
-
-        function flv_seekto() {
-            player.currentTime = parseFloat(document.getElementsByName('seekpoint')[0].value);
-        }
     </script>
+
 </body>
 
 </html>

@@ -26,7 +26,7 @@ sql1 = "\
 #ADD STU
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
+        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 000000 , '2002020202020200' , '男' , '心有猛虎，轻嗅蔷薇。' , '这个男人简直失了智。' 
     )
 '''
 

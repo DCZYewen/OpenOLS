@@ -47,9 +47,6 @@ function load_mainpage_info() {
     var Token = getCookie("token")
     var User_Id = getCookie("user_id")
 
-    Token = "21HfKrQJO8S3Pa2pSRZbjUkFE%2F7amDgCJDvTu6BFdV0%3D"
-    User_Id = "99999998"
-
     if(!Token || !User_Id){
         goHome()
         return

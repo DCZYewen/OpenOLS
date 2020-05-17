@@ -6,7 +6,7 @@
 
 1.USER_ID是指系统内部的ID，USERNAME是指登陆账号，相应的是数据库中的ACCOUNT。
 2.可能会有一些令人混淆，如果有一个用户名字叫student，他的权限也是”学生“，但是通过API获取的user_name会是小写，auth会是全都是大写。即auth:"ADMIN"
-
+3.虽然有些API很臃肿，但是很多地方还是有简便性的考量。
 
 ## 地址 `/`
 ```
@@ -186,7 +186,8 @@ section表
   "people" : "42",
   "listening" : "23",
   "time_start" : "2002022312124500",
-  "time_end" : "2020022312124500"
+  "time_end" : "2020022312124500",
+  "is_end" : True
 }
 
 ```

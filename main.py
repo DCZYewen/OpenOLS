@@ -4,9 +4,8 @@ from Crypto.Cipher import AES
 import psycopg2
 import sys
 import string
-import time
+import time,_thread,random
 import site_settings
-import random
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
@@ -212,11 +211,57 @@ async def mainpage(token: str , user_id: int ):
 async def maincontent(token: str , user_id: int , section: int , page : int):
     user_id = str(user_id)
     token = token.replace(' ','+')
-    
+    result = totalAuth(user_id , token)
+    if result == "TOKEN VALID":
+
+        pass
+    else :
+        return("status" , "token_authentication_failure")
+
 @app.get("/fetch_course_by_id")
 async def fetch_course_by_id(token: str , user_id: int , course_id : int):
+    user_id = str(user_id)
+    course_id = str(course_id)
+    token = token.replace(' ','+')
+    result = totalAuth(user_id , token)
+    if result == "TOKEN VALID":
+        init = "USER_ID = '" + user_id + "'"
+        result = SELECT_FUNC('USERS',init)
+        class_id = result[3]
+        class_id = str(class_id)
+        init = "COURSE_ID = '" + course_id + "'"
+        result = SELECT_FUNC('COURSE',init)
+        if not result == None:
+            visibleFlag = False
+            visibility = resolve_visibility(result[3])
 
-    pass
+            for item in visibility:
+                if str(item) == class_id:
+                    visibleFlag = True
+                    break
+                else:
+                    pass
+
+            if visibleFlag :
+                print(result)
+                returnItem = {
+                    "status" : "OK",
+                    "title" : result[1],
+                    "people" : result[2],
+                    "listening" : result[4],
+                    "time_start" : result[5],
+                    "time_end" : result[6],
+                    "is_end" : result[7]
+                }
+                return returnItem
+            else :
+                return("status","invisible_to_current_user")
+        else:
+            return("status","course_id_invalid")
+    else:
+        return("status" , "token_authentication_failure")
+    
+
 
 
 ##获取前端弱鸡加密过的密码
@@ -378,27 +423,21 @@ def resolve_visibility(visibility):#返回可见课程的列表组
     resolved = visibility.split("/s",-1)
     return resolved
 
-def totalAuth(user_id , token , ):
+def totalAuth(user_id , token):#总鉴权函数 根据传入信息决断状态
     token = token.replace(' ','+')
     init = "TOKEN = '" + token + "'"
     TOKEN_ITEM = SELECT_FUNC('tokens',init)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
-        return("status" , "token_authentication_failure")
+        return "TOKEN DOES NOT EXIST"
     elif not check_item == 'TOKEN VALID':
-        return("status" , "token_authentication_failure")
+        return "TOKEN INVAILD"
     elif check_item == 'TOKEN VALID':
         init = "USER_ID = '" + user_id + "'"
         result = SELECT_FUNC('USERS',init)
         if result == None:
-            returnItem = {
-                "status" : "token_authentication_failure"
-            }
+            return "USER_ID INVALID"
         else :
-            returnItem = {
-                "status" : "ok",
-                "auth" : str.upper(result[6])
-            }
-        return(returnItem)
+            return "TOKEN VALID"
     else :
-        return("status" , "token_authentication_failure")
+        return "FATAL ERROR ENCOUNTERED"
