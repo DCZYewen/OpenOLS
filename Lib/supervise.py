@@ -4,7 +4,7 @@ import psutil
 # 两个参数，分别是interval和percpu,
 # interval指定的是计算cpu使用率的时间间隔，
 # percpu则指定是选择总的使用率还是每个cpu的使用率。(默认为False)
-percent = psutil.cpu_percent(interval=5)
+percent = psutil.cpu_percent(interval=1)
 #print(f"当前CPU总使用率为:{percent}%")
 
 per_percent = psutil.cpu_percent(interval=1, percpu=True)
