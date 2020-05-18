@@ -2,8 +2,7 @@ from fastapi import FastAPI
 import base64
 from Crypto.Cipher import AES
 import psycopg2
-import sys
-import string
+import sys,string,requests
 import time,_thread,random
 import site_settings
 from werkzeug.security import generate_password_hash
@@ -18,6 +17,8 @@ api_url = site_settings.api_url
 aes_key = site_settings.aes_key
 html = site_settings.html
 hash_hey = site_settings.hash_key
+flushFlag = False
+
 
 #program startups
 app = FastAPI()
@@ -33,6 +34,7 @@ logical = Lib.supervise.logical_count
 cpus = Lib.supervise.cpu_count
 total = Lib.supervise.mem.total
 free = Lib.supervise.mem.free
+
 
 #接入CORS
 origins = [
@@ -144,7 +146,7 @@ async def check_valid(user_id: int , token: str):
             }
         else :
             returnItem = {
-                "status" : "ok",
+                "status" : "OK",
                 "auth" : str.upper(result[6])
             }
         return(returnItem)
@@ -179,33 +181,33 @@ async def mainpage(token: str , user_id: int ):
     init = "USER_ID = '" + user_id + "'"
     USER_ITEM = SELECT_FUNC('USERS',init)
     check_item = auth_func(user_id,token)
-    return_item = {
-        "status" : "OK",
-        'statistics' : {
-            "CPUS" : logical,
-            "Total_Usage" : percent,
-            "Per_Usage" : per_percent,
-            "Total_Mem" : total ,
-            "Free_Mem" : free 
-        },
-        'information' : {
-            'name' : USER_ITEM[1],
-            'grade' : USER_ITEM[2],
-            'auth' : USER_ITEM[6],
-            'last_course': USER_ITEM[8],
-            'exit_time' : USER_ITEM[9],
-            'gender' : USER_ITEM[10],
-            'intro' : USER_ITEM[11],
-            'motto' : USER_ITEM[12]
-        }
-    }
-    print(check_item)
-    if not check_item == 'TOKEN VALID':
+    if USER_ITEM == None:
         return("status","AUTH_ERROR")
-    elif USER_ITEM == None:
-        return("status" , "AUTH_ERROR")
-    else :
-        return return_item
+    else:
+        return_item = {
+            "status" : "OK",
+            'statistics' : {
+                "CPUS" : logical,
+                "Total_Usage" : percent,
+                "Per_Usage" : per_percent,
+                "Total_Mem" : total ,
+                "Free_Mem" : free 
+            },
+            'information' : {
+                'name' : USER_ITEM[1],
+                'grade' : USER_ITEM[2],
+                'auth' : USER_ITEM[6],
+                'last_course': USER_ITEM[8],
+                'exit_time' : USER_ITEM[9],
+                'gender' : USER_ITEM[10],
+                'intro' : USER_ITEM[11],
+                'motto' : USER_ITEM[12]
+            }
+        }
+        if not check_item == 'TOKEN VALID':
+            return("status","AUTH_ERROR")
+        else :
+            return return_item
 
 @app.get("/get_main_content")
 async def maincontent(token: str , user_id: int , section: int , page : int):
