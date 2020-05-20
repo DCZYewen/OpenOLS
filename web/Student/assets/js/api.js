@@ -10,7 +10,7 @@ function getCookie(cname) {
     return "";
 }
 
-function setCourceName(token, userid, courseid) {
+function setCourceName(token, userid, courseid) { // This func works but shitty. - mzWyt
     
     var url = API_URL + '/fetch_course_by_id/?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
 
