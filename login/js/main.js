@@ -1,6 +1,6 @@
 //Statics declaration
-API_URL = "https://o2ls.basicws.net/"
-PAGE_URL = "https://o2ls.basicws.net/"
+API_URL = "https://o2lsapi.basicws.net"
+PAGE_URL = "https://o2ls.basicws.net"
 
 function login() {
     var username = document.getElementById("username");
