@@ -22,7 +22,7 @@ flushFlag = False
 
 #program startups
 app = FastAPI()
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="test1", user="postgres", password="dachengzi", host="127.0.0.1", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
 global TOKEN_NO

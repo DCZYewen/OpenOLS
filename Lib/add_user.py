@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import psycopg2
 import sys
 import random
@@ -9,7 +10,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
 
-conn = psycopg2.connect(database="TEST1", user="postgres", password="dachengzi", host="10.0.10.102", port="5432") #password in this line is invalid 
+conn = psycopg2.connect(database="test1", user="postgres", password="dachengzi", host="127.0.0.1", port="5432") #password in this line is invalid 
 cur = conn.cursor()
 
 #encrypt the default pass
