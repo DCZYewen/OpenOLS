@@ -47,7 +47,7 @@ def deleteByID(table , id , id_form):#以ID为索引删除一行,id_form是id的
 
 def deleteByIndex(table,key_word,value):#删除给定一个删除的索引
 ##deleteByIndex(USERS,'class',13)把13班的用户都删除
-    sql = 'DELETE FROM ' + table + ' WHERE ' + key_word + '=' + str(value) + ';'
+    sql = 'DELETE FROM ' + table + ' WHERE ' + key_word + "='" + str(value) + "';"
     if not securitySQL(sql) :
         cur.execute(sql)
         conn.commit()
@@ -70,7 +70,7 @@ def updateByID(table,UpdateLine,id,id_form):#以ID为索引修改
 
 def updateByIndex(table,UpdateLine,key_word,value):#索引指定的索引更改
 ##deleteByIndex(USERS,makeUpdateLine('class',13,'gender','male'),auth,admin)把auth为admin的人的class属性改成13，性别改成male
-    sql = 'UPDATE ' + table + ' SET ' + UpdateLine + ' WHERE ' + key_word + '=' + str(value) + ';'
+    sql = 'UPDATE ' + table + ' SET ' + UpdateLine + ' WHERE ' + key_word + "='" + str(value) + "';"
     if not securitySQL(sql) :
         cur.execute(sql)
         conn.commit()
@@ -113,7 +113,7 @@ def selectByIndex(table , SelectIndex ):#根据给定的索引选取指定数据
 
 def findByValue(table,SelectIndex,key_word,value):#查找一个值
 ##抄一段SQL吧SELECT * FROM Persons WHERE City='Beijing';
-    sql = 'SELECT ' + SelectIndex + ' FROM ' + table + ' WHERE ' + key_word + '=' + value + "'"
+    sql = 'SELECT ' + SelectIndex + ' FROM ' + table + ' WHERE ' + key_word + "='" + str(value) + "';"
     if not securitySQL(sql) :
         cur.execute(sql)
         return(cur.fetchone())
