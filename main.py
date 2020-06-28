@@ -67,7 +67,7 @@ async def ping():
 
 @app.get("/login/")
 async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
-    user_information = {"username": username,"password": password,"time":str}
+    #user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
     init = "ACCOUNT = '" + username + "'"
@@ -177,7 +177,7 @@ async def mainpage(token: str , user_id: int ):
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
     token = token.replace(' ','+')
-    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    #TOKEN_ITEM = SELECT_FUNC('tokens',init)
     init = "USER_ID = '" + user_id + "'"
     USER_ITEM = SELECT_FUNC('USERS',init)
     check_item = auth_func(user_id,token)
@@ -305,7 +305,6 @@ def UPDATA_FUNC(table,operators):
 #创建一个token 并初始化信息 同时，当上一个token存在的时候，将上一个token过期
 #这里我使用了一个Flag表示函数是否由登陆函数调起，因为登陆时不会传入上一个token 即 如果第二个参数是False表示其由登陆函数拉起
 def token_create(user_id,*args):
-    OUT_FLAG = False
     global TOKEN_NO
     time = get_time_string() + '00'
     user_id = str(user_id)
