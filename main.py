@@ -2,8 +2,7 @@ from fastapi import FastAPI
 import base64
 from Crypto.Cipher import AES
 import psycopg2
-import sys,string,requests
-import time,_thread,random
+import sys,string,requests,time,random
 import site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -63,7 +62,7 @@ async def status_check(user_id: int, time_stamp: int ,status: bool):#接收状�
     return("status" , "OK")
 
 @app.get("/ping")#this is for getting the ping of the server 
-async def root():
+async def ping():
     return("status" , "OK")
 
 @app.get("/login/")
