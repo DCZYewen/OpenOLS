@@ -55,7 +55,7 @@ app.add_middleware(
 
 @app.get("/")#This is for main page
 async def root():
-    return("就不要研究人家API了好嘛！")
+    return "就不要研究人家API了好嘛！"
 
 @app.get("/status")#this is for heartbeat to detect the client status
 async def status_check(user_id: int, time_stamp: int ,status: bool):#接收状态信息
@@ -70,36 +70,37 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     #user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
-    init = "ACCOUNT = '" + username + "'"
-    result = SELECT_FUNC('USERS',init)
+
+    result = o2lsdb.findByValue('USERS',o2lsdb.makeSelectIndex('user_id','auth','passwd'),'username',username)
+
     if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
-        if check_password_hash(result[5],real_pass):
-            if result[6]=='ADMIN':
+        if check_password_hash(result[2],real_pass):
+            if result[1]=='ADMIN':
                 login_admin_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Admin',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_admin_item)
                 return login_admin_item
-            elif result[6]=='STUDENT':
+            elif result[1]=='STUDENT':
                 login_stu_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Student',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_stu_item)
                 return login_stu_item
-            elif result[6]=='TEACHER':
+            elif result[1]=='TEACHER':
                 login_teacher_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Teacher',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_teacher_item)
