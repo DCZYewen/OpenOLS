@@ -3,7 +3,7 @@ import base64
 from Crypto.Cipher import AES
 import psycopg2
 import sys,string,requests,time,random
-import site_settings
+import Lib.site_settings as site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +22,7 @@ flushFlag = False
 
 #program startups
 app = FastAPI()
+
 conn = libconnect.conn
 cur = libconnect.cur
 cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
