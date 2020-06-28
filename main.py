@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
 import Lib.supervise as supervise
+import Lib.libo2lsdb as o2lsdb
 import Lib.libconnect as libconnect
 
 #All constants declaration
@@ -15,7 +16,6 @@ tz = 8 #声明时区UTC+8
 site_url = site_settings.site_url
 api_url = site_settings.api_url
 aes_key = site_settings.aes_key
-html = site_settings.html
 hash_hey = site_settings.hash_key
 flushFlag = False
 
@@ -25,24 +25,24 @@ app = FastAPI()
 
 conn = libconnect.conn
 cur = libconnect.cur
-cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
+cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')#写死的SQL 没有风险
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
-percent = supervise.percent
-per_percent = supervise.per_percent
-logical = supervise.logical_count
-cpus = supervise.cpu_count
-total = supervise.mem.total
-free = supervise.mem.free
+conn.close()#销毁conn句柄
+
+#percent = supervise.percent
+#per_percent = supervise.per_percent
+#logical = supervise.logical_count
+#cpus = supervise.cpu_count
+#total = supervise.mem.total
+#free = supervise.mem.free
 
 
 #接入CORS
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
-    "http://localhost:6000",
+    "http://localhost:8000",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -53,10 +53,9 @@ app.add_middleware(
 )
 
 
-
 @app.get("/")#This is for main page
 async def root():
-    return(html)
+    return("就不要研究人家API了好嘛！")
 
 @app.get("/status")#this is for heartbeat to detect the client status
 async def status_check(user_id: int, time_stamp: int ,status: bool):#接收状态信息

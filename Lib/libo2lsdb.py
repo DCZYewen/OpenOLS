@@ -20,7 +20,7 @@ def insertFulline(table,InsertLine):#提供全行数据的插入
         cur.execute(sql)
         conn.commit()
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 
 ## Test Pass ! Thanks to the mercy of pgsql !
 
@@ -40,7 +40,7 @@ def deleteByID(table , id , id_form):#以ID为索引删除一行,id_form是id的
         cur.execute(sql)
         conn.commit()
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 ## Test Pass ! Thanks to the mercy of pgsql !
 
 
@@ -52,7 +52,7 @@ def deleteByIndex(table,key_word,value):#删除给定一个删除的索引
         cur.execute(sql)
         conn.commit()
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 #说实话我觉得这玩意没个鸡儿用，但是还是写了，为了逼格
 
 
@@ -65,7 +65,7 @@ def updateByID(table,UpdateLine,id,id_form):#以ID为索引修改
         cur.execute(sql)
         conn.commit()
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 ## Test Pass ! Thanks to the mercy of pgsql !
 
 def updateByIndex(table,UpdateLine,key_word,value):#索引指定的索引更改
@@ -75,7 +75,7 @@ def updateByIndex(table,UpdateLine,key_word,value):#索引指定的索引更改
         cur.execute(sql)
         conn.commit()
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 
 #查查查查查查查查查查查查查查查查查查查查查查查查
 ## Tips，查找结果一律按ID排序
@@ -86,7 +86,7 @@ def selectAll(table):#只有当生成统计信息时使用，不要调用！
         cur.execute(sql)
         return(cur.fetchall())
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 ## Test Pass ! Thanks to the mercy of pgsql !
 
 def selectByID(table , SelectLine , id , id_form):#根据ID获取一整行数据
@@ -97,23 +97,28 @@ def selectByID(table , SelectLine , id , id_form):#根据ID获取一整行数据
         cur.execute(sql)
         return(cur.fetchone())
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 ## Test Pass ! Thanks to the mercy of pgsql !
 
-def selectByIndex(table , SelectIndex ):#根据给定的索引选取一整行数据
+def selectByIndex(table , SelectIndex ):#根据给定的索引选取指定数据
 ##selectByIndex(USERS,makeSelectIndex(user_id,114514))这个和上一个函数的实例should do the same 
     sql = 'SELECT ' + SelectIndex + ' FROM ' + table + ';'
     if not securitySQL(sql) :
         cur.execute(sql)
         return(cur.fetchall())
     else :
-        return "FUCK I M UNSDER ATTACK"
+        return "FUCK I M UNDER ATTACK"
 
 
-def findByValue():#查找一个值
-##findByValue():##估计没个鸡儿用，爷懒得写了
+
+def findByValue(table,SelectIndex,key_word,value):#查找一个值
 ##抄一段SQL吧SELECT * FROM Persons WHERE City='Beijing';
-    pass
+    sql = 'SELECT ' + SelectIndex + ' FROM ' + table + ' WHERE ' + key_word + '=' + value + "'"
+    if not securitySQL(sql) :
+        cur.execute(sql)
+        return(cur.fetchone())
+    else :
+        return "FUCK I M UNDER ATTACK"
 
 
 
