@@ -8,7 +8,8 @@ import site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
-import Lib.supervise
+import Lib.supervise as supervise
+import Lib.libconnect as libconnect
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
@@ -22,18 +23,18 @@ flushFlag = False
 
 #program startups
 app = FastAPI()
-conn = psycopg2.connect(database="test1", user="postgres", password="dachengzi", host="127.0.0.1", port="5432") #password in this line is invalid 
-cur = conn.cursor()
+conn = libconnect.conn
+cur = libconnect.cur
 cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
-percent = Lib.supervise.percent
-per_percent = Lib.supervise.per_percent
-logical = Lib.supervise.logical_count
-cpus = Lib.supervise.cpu_count
-total = Lib.supervise.mem.total
-free = Lib.supervise.mem.free
+percent = supervise.percent
+per_percent = supervise.per_percent
+logical = supervise.logical_count
+cpus = supervise.cpu_count
+total = supervise.mem.total
+free = supervise.mem.free
 
 
 #接入CORS
