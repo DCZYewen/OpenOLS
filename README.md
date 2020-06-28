@@ -84,9 +84,8 @@ Share的内容可以是站内的收藏夹，或者自己的 Time Line 和 Remind
 
 OpenOLS秉持着开放的心态，不会逼着朋友们去学习，你可以给自己设置一个合理的Halt时间，在这个时间中，你不能访问OpenOLS除了直播课以外的其他内容，从而获得一个小憩。同时OpenOLS也在你点下返回或者退出或者重新登陆之时取消你的Halt状态。
 
-## 5.家庭作业（作业和测试的计划推迟，交给智学网
 
-## 6.测试中心
+# Technical Details
 
 ## Statements of How to achieve
 

@@ -2,46 +2,47 @@ from fastapi import FastAPI
 import base64
 from Crypto.Cipher import AES
 import psycopg2
-import sys,string,requests
-import time,_thread,random
-import site_settings
+import sys,string,requests,time,random
+import Lib.site_settings as site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
-import Lib.supervise
+import Lib.supervise as supervise
+import Lib.libo2lsdb as o2lsdb
+import Lib.libconnect as libconnect
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
 site_url = site_settings.site_url
 api_url = site_settings.api_url
 aes_key = site_settings.aes_key
-html = site_settings.html
 hash_hey = site_settings.hash_key
 flushFlag = False
 
 
 #program startups
 app = FastAPI()
-conn = psycopg2.connect(database="test1", user="postgres", password="dachengzi", host="127.0.0.1", port="5432") #password in this line is invalid 
-cur = conn.cursor()
-cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')
+
+conn = libconnect.conn
+cur = libconnect.cur
+cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')#写死的SQL 没有风险
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
-percent = Lib.supervise.percent
-per_percent = Lib.supervise.per_percent
-logical = Lib.supervise.logical_count
-cpus = Lib.supervise.cpu_count
-total = Lib.supervise.mem.total
-free = Lib.supervise.mem.free
+conn.close()#销毁conn句柄
+
+#percent = supervise.percent
+#per_percent = supervise.per_percent
+#logical = supervise.logical_count
+#cpus = supervise.cpu_count
+#total = supervise.mem.total
+#free = supervise.mem.free
 
 
 #接入CORS
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
-    "http://localhost:6000",
+    "http://localhost:8000",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -52,54 +53,54 @@ app.add_middleware(
 )
 
 
-
 @app.get("/")#This is for main page
 async def root():
-    return(html)
+    return "就不要研究人家API了好嘛！"
 
 @app.get("/status")#this is for heartbeat to detect the client status
 async def status_check(user_id: int, time_stamp: int ,status: bool):#接收状态信息
     return("status" , "OK")
 
 @app.get("/ping")#this is for getting the ping of the server 
-async def root():
+async def ping():
     return("status" , "OK")
 
 @app.get("/login/")
 async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
-    user_information = {"username": username,"password": password,"time":str}
+    #user_information = {"username": username,"password": password,"time":str}
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
-    init = "ACCOUNT = '" + username + "'"
-    result = SELECT_FUNC('USERS',init)
+
+    result = o2lsdb.findByValue('USERS',o2lsdb.makeSelectIndex('user_id','auth','passwd'),'username',username)
+
     if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
-        if check_password_hash(result[5],real_pass):
-            if result[6]=='ADMIN':
+        if check_password_hash(result[2],real_pass):
+            if result[1]=='ADMIN':
                 login_admin_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Admin',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_admin_item)
                 return login_admin_item
-            elif result[6]=='STUDENT':
+            elif result[1]=='STUDENT':
                 login_stu_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Student',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_stu_item)
                 return login_stu_item
-            elif result[6]=='TEACHER':
+            elif result[1]=='TEACHER':
                 login_teacher_item = {"status" : "OK",
                 "redirect_url" : site_url + '/web/Teacher',
                 "user_id" : result[0],
                 "token" : token_create(result[0],False),
-                "AUTH" : str.upper(result[6]),
+                "AUTH" : str.upper(result[1]),
                 "tab" : 0
                 }
                 print(login_teacher_item)
@@ -177,7 +178,7 @@ async def mainpage(token: str , user_id: int ):
     init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
     token = token.replace(' ','+')
-    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    #TOKEN_ITEM = SELECT_FUNC('tokens',init)
     init = "USER_ID = '" + user_id + "'"
     USER_ITEM = SELECT_FUNC('USERS',init)
     check_item = auth_func(user_id,token)
@@ -305,7 +306,6 @@ def UPDATA_FUNC(table,operators):
 #创建一个token 并初始化信息 同时，当上一个token存在的时候，将上一个token过期
 #这里我使用了一个Flag表示函数是否由登陆函数调起，因为登陆时不会传入上一个token 即 如果第二个参数是False表示其由登陆函数拉起
 def token_create(user_id,*args):
-    OUT_FLAG = False
     global TOKEN_NO
     time = get_time_string() + '00'
     user_id = str(user_id)
