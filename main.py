@@ -131,16 +131,14 @@ async def flush(user_id: int , token: str):
 async def check_valid(user_id: int , token: str):
     user_id = str(user_id)
     token = token.replace(' ','+')
-    init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    TOKEN_ITEM = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('user_id','name','auth'),'token',token)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
         return("status" , "token_authentication_failure")
     elif not check_item == 'TOKEN VALID':
         return("status" , "token_authentication_failure")
     elif check_item == 'TOKEN VALID':
-        init = "USER_ID = '" + user_id + "'"
-        result = SELECT_FUNC('USERS',init)
+        result = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('auth'),user_id,'user_id')
         if result == None:
             returnItem = {
                 "status" : "token_authentication_failure"
@@ -175,39 +173,37 @@ async def logout(user_id: int , token: str):
 
 @app.get("/mainpage")#这个API默认了user_id存在，后续可能会增加进一步的错误处理 patched
 async def mainpage(token: str , user_id: int ):
-    init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
     token = token.replace(' ','+')
-    #TOKEN_ITEM = SELECT_FUNC('tokens',init)
-    init = "USER_ID = '" + user_id + "'"
-    USER_ITEM = SELECT_FUNC('USERS',init)
+
+    USER_ITEM = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('name','grade','auth','last_course','exit_time','gender','intro','motto'),user_id,'user_id')
     check_item = auth_func(user_id,token)
     if USER_ITEM == None:
         return("status","AUTH_ERROR")
     else:
-        return_item = {
-            "status" : "OK",
-            'statistics' : {
-                "CPUS" : logical,
-                "Total_Usage" : percent,
-                "Per_Usage" : per_percent,
-                "Total_Mem" : total ,
-                "Free_Mem" : free 
-            },
-            'information' : {
-                'name' : USER_ITEM[1],
-                'grade' : USER_ITEM[2],
-                'auth' : USER_ITEM[6],
-                'last_course': USER_ITEM[8],
-                'exit_time' : USER_ITEM[9],
-                'gender' : USER_ITEM[10],
-                'intro' : USER_ITEM[11],
-                'motto' : USER_ITEM[12]
-            }
-        }
         if not check_item == 'TOKEN VALID':
             return("status","AUTH_ERROR")
         else :
+            return_item = {
+                "status" : "OK",
+                'statistics' : {
+                    "CPUS" : logical,
+                    "Total_Usage" : percent,
+                    "Per_Usage" : per_percent,
+                    "Total_Mem" : total ,
+                    "Free_Mem" : free 
+                },
+                'information' : {
+                    'name' : USER_ITEM[0],
+                    'grade' : USER_ITEM[1],
+                    'auth' : USER_ITEM[2],
+                    'last_course': USER_ITEM[3],
+                    'exit_time' : USER_ITEM[4],
+                    'gender' : USER_ITEM[5],
+                    'intro' : USER_ITEM[6],
+                    'motto' : USER_ITEM[7]
+                }
+            }
             return return_item
 
 @app.get("/get_main_content")
@@ -216,7 +212,6 @@ async def maincontent(token: str , user_id: int , section: int , page : int):
     token = token.replace(' ','+')
     result = totalAuth(user_id , token)
     if result == "TOKEN VALID":
-
         pass
     else :
         return("status" , "token_authentication_failure")
@@ -228,15 +223,14 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
     token = token.replace(' ','+')
     result = totalAuth(user_id , token)
     if result == "TOKEN VALID":
-        init = "USER_ID = '" + user_id + "'"
-        result = SELECT_FUNC('USERS',init)
-        class_id = result[3]
-        class_id = str(class_id)
-        init = "COURSE_ID = '" + course_id + "'"
-        result = SELECT_FUNC('COURSE',init)
+        result = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('class_id'),user_id,'user_id')
+        class_id = str(result[0])
+
+        result = o2lsdb.selectByID('COURSE',o2lsdb.makeSelectLine('visibility','title','people','listening','time_start','time_end','is_end'),course_id,'course_id')
+
         if not result == None:
             visibleFlag = False
-            visibility = resolve_visibility(result[3])
+            visibility = resolve_visibility(result[0])
 
             for item in visibility:
                 if str(item) == class_id:
@@ -251,10 +245,10 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
                     "status" : "OK",
                     "title" : result[1],
                     "people" : result[2],
-                    "listening" : result[4],
-                    "time_start" : result[5],
-                    "time_end" : result[6],
-                    "is_end" : result[7]
+                    "listening" : result[3],
+                    "time_start" : result[4],
+                    "time_end" : result[5],
+                    "is_end" : result[6]
                 }
                 return returnItem
             else :
@@ -277,31 +271,6 @@ def get_real_pass(password,time):
     else :
         real_pass = decode_string[2:i-2]
     return str(real_pass)
-
-##插库驱动函数（单行
-def INSERT_FUNC(table,*args):
-    TURPLE_COUNTER = 0
-    sql = 'INSERT INTO ' + str(table) + " VALUES ('"#构造SQL语句
-    while len(args) > TURPLE_COUNTER + 1:
-        sql = sql + str(args[TURPLE_COUNTER]) + "', '"
-        TURPLE_COUNTER = TURPLE_COUNTER + 1
-    
-    sql = sql + str(args[TURPLE_COUNTER]) + "');"
-    print(sql)
-    cur.execute(sql)
-    conn.commit()
-
-##查库驱动函数（单字段 单条件 单返回结果
-def SELECT_FUNC(table,operators):
-    sql = "SELECT * FROM " + str(table) + " WHERE " + operators
-    cur.execute(sql)
-    return cur.fetchone()
-
-##更新数据库的驱动函数（单字段
-def UPDATA_FUNC(table,operators):
-    sql = "UPDATE " + str(table) + " SET " + operators
-    cur.execute(sql)
-    print("Something UPDATED")
 
 #创建一个token 并初始化信息 同时，当上一个token存在的时候，将上一个token过期
 #这里我使用了一个Flag表示函数是否由登陆函数调起，因为登陆时不会传入上一个token 即 如果第二个参数是False表示其由登陆函数拉起
