@@ -134,7 +134,7 @@ def makeInsertLine(*args):
 def makeInsertCol():
     pass
 
-def makeUpdateLine(*args):
+def makeUpdateLine(*args):#返回类似fast='1',kill='b'
     tmpList = []
     Jmp_Flag = False
 

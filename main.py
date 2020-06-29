@@ -158,16 +158,16 @@ async def check_valid(user_id: int , token: str):
 async def logout(user_id: int , token: str):
     user_id = str(user_id)
     token = token.replace(' ','+')
-    init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    
+    TOKEN_ITEM = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('user_id','name','auth'),'token',token)
+
     check_item = token_check(token)
     if TOKEN_ITEM==None :
         return("status" , "logout_failed")
     elif not check_item == 'TOKEN VALID':
         return("status" , "OK")
     elif check_item == 'TOKEN VALID':
-        init = "EXPIRED = True WHERE USER_ID = " + user_id
-        UPDATA_FUNC('tokens',init)
+        o2lsdb.updateByID("USERS",o2lsdb.makeUpdateLine('expired',True),user_id,'user_id')
         return("status","OK")
     else :
         return("status" , "logout_failed")
