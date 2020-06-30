@@ -310,7 +310,7 @@ def token_create(user_id,*args):
                 cur.execute(sql)
                 token_user = cur.fetchone()
                 if token_user[3] == args[1]:
-                    o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired',True),user_id,'user_id')
+                    o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired','True'),user_id,'user_id')
                 else :
                     AUTH = None
             else:
@@ -321,7 +321,7 @@ def token_create(user_id,*args):
         if TOKEN_ITEM == None :#如果该用户上一个TOKEN不存在
             pass
         else :#当上一个token存在的时候expire它
-            o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired',True),user_id,'user_id')
+            o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired','True'),user_id,'user_id')
     if AUTH == None:
         return ("info" , "token_authentication_failure")
     else :
