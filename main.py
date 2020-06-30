@@ -29,7 +29,6 @@ cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')#写死的SQL
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
-conn.close()#销毁conn句柄
 
 percent = supervise.percent
 per_percent = supervise.per_percent
