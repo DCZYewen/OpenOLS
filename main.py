@@ -70,7 +70,7 @@ async def read_item(username: str , password: str, time: str): #这里是登录A
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
 
-    result = o2lsdb.findByValue('USERS',o2lsdb.makeSelectIndex('user_id','auth','passwd'),'username',username)
+    result = o2lsdb.findByValue('USERS',o2lsdb.makeSelectIndex('user_id','auth','passwd'),'account',username)
 
     if not result == None: #登陆逻辑判断建议隐藏了因为我也不想看这一堆玩意
         if check_password_hash(result[2],real_pass):
