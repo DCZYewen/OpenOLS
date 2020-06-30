@@ -144,6 +144,10 @@ def makeUpdateLine(*args):#返回类似fast='1',kill='b'
     string = ''
     for tmp in tmpList:
         if not Jmp_Flag :
+            if tmp == True:
+                tmp = 'True'
+            else:
+                pass
             string = string + tmp + '=' + "'"
             Jmp_Flag = not Jmp_Flag
         else :
