@@ -1,4 +1,4 @@
-import libconnect
+from . import libconnect
 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
