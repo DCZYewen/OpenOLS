@@ -1,4 +1,4 @@
-import libconnect
+from . import libconnect
 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -134,7 +134,7 @@ def makeInsertLine(*args):
 def makeInsertCol():
     pass
 
-def makeUpdateLine(*args):
+def makeUpdateLine(*args):#返回类似fast='1',kill='b'
     tmpList = []
     Jmp_Flag = False
 
@@ -144,6 +144,10 @@ def makeUpdateLine(*args):
     string = ''
     for tmp in tmpList:
         if not Jmp_Flag :
+            if tmp == True:
+                tmp = 'True'
+            else:
+                pass
             string = string + tmp + '=' + "'"
             Jmp_Flag = not Jmp_Flag
         else :
@@ -178,11 +182,12 @@ def securitySQL(sql:str):
     flag6 = sql.find('AND')
     flag7 = sql.find('NULL')
     flag8 = sql.find("VERSION")
+    #如果找到则不返回-1
 
-    if not (flag1 or flag2 or flag3 or flag4 or flag5 or flag6) :
-        if not (flag7 or flag8) :
-            return 'Insecure'
-        else:
-            return 0
-    else :
+    if not (flag1==-1 and flag2==-1 and flag3==-1 and flag4==-1 ) :
         return 0
+    elif (flag5==-1 and flag6==-1 and flag7==-1 and flag8==-1):
+        return 0
+    else : 
+        return 'Insecure'
+
