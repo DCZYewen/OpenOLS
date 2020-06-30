@@ -277,16 +277,15 @@ def token_create(user_id,*args):
     global TOKEN_NO
     time = get_time_string() + '00'
     user_id = str(user_id)
-    print(user_id)
+    print(len(user_id))
     def makeTOKEN_STRING(user_id):
         ## A Stupid Function Used to make the TOKEN_STRING more random
         i = 0
-        print(i)
-        print('\n')
-        while i <= len(user_id):
+        TOKEN_STRING = user_id[i] + str(random.randint(0,9))
+        while i < len(user_id)-1:
             i = i + 1
+            TOKEN_STRING = TOKEN_STRING + user_id[i] + str(random.randint(0,9))
             print(TOKEN_STRING)
-            TOKEN_STRING = user_id[i] + str(random.randint(0,9))
         
         return TOKEN_STRING
 
