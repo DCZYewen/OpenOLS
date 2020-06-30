@@ -281,7 +281,7 @@ def token_create(user_id,*args):
         ## A Stupid Function Used to make the TOKEN_STRING more random
         i = 0
         
-        while i < len(user_id):
+        while i <= len(user_id):
             i = i + 1
             TOKEN_STRING = user_id[i] + str(random.randint(0,9))
         
