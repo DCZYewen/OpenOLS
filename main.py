@@ -31,12 +31,12 @@ TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
 conn.close()#销毁conn句柄
 
-#percent = supervise.percent
-#per_percent = supervise.per_percent
-#logical = supervise.logical_count
-#cpus = supervise.cpu_count
-#total = supervise.mem.total
-#free = supervise.mem.free
+percent = supervise.percent
+per_percent = supervise.per_percent
+logical = supervise.logical_count
+cpus = supervise.cpu_count
+total = supervise.mem.total
+free = supervise.mem.free
 
 
 #接入CORS
@@ -278,12 +278,23 @@ def token_create(user_id,*args):
     global TOKEN_NO
     time = get_time_string() + '00'
     user_id = str(user_id)
-    TOKEN_STRING = user_id + time
-    encrypted = encrypt_oracle(aes_key,TOKEN_STRING)
-    init = "USER_ID = '" + user_id + "'" #此处获取user的权限
-    AUTH = SELECT_FUNC('users',init)
+    def makeTOKEN_STRING(user_id):
+        ## A Stupid Function Used to make the TOKEN_STRING more random
+        i = 0
+        
+        while i < len(user_id):
+            i = i + 1
+            TOKEN_STRING = user_id[i] + str(random.randint(0,9))
+        
+        return TOKEN_STRING
+
+    encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
+    while o2lsdb.securitySQL(encrypted) == 'Insecure':##it seems that no do .. while loop in python ?
+        encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
+    AUTH = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('auth'),user_id,'user_id')
+
     if AUTH:
-        AUTH = AUTH[7]
+        AUTH = AUTH[0]
     else :
         pass
 
@@ -293,37 +304,37 @@ def token_create(user_id,*args):
         if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
-            sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
-            cur.execute(sql)
-            token_user = cur.fetchone()
-            if token_user[3] == args[1]:
-                init = "EXPIRED = True WHERE USER_ID = " + user_id
-                UPDATA_FUNC('tokens',init)
-            else :
-                AUTH = None
+            if o2lsdb.securitySQL(user_id) == 0:
+                sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
+                cur.execute(sql)
+                token_user = cur.fetchone()
+                if token_user[3] == args[1]:
+                    o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired',True),user_id,'user_id')
+                else :
+                    AUTH = None
+            else:
+                return ("info" , "token_authentication_failure")
+
     else :
-        init = "USER_ID = '" + user_id + "'"
-        TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+        TOKEN_ITEM = o2lsdb.selectByID('TOKENS',o2lsdb.makeSelectLine('token_no','expired'),user_id,'user_id')
         if TOKEN_ITEM == None :#如果该用户上一个TOKEN不存在
             pass
         else :#当上一个token存在的时候expire它
-            init = "EXPIRED = True WHERE USER_ID = " + user_id
-            UPDATA_FUNC('tokens',init)#这里强制过期上一个token
+            o2lsdb.updateByID("TOKENS",o2lsdb.makeUpdateLine('expired',True),user_id,'user_id')
     if AUTH == None:
         return ("info" , "token_authentication_failure")
     else :
-        INSERT_FUNC('tokens',TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH)
+        o2lsdb.insertFulline('TOKENS',o2lsdb.makeInsertLine(TOKEN_NO + 1,time,'False',encrypted,user_id,AUTH))
         TOKEN_NO = TOKEN_NO + 1 #注意这里将初始化时的TOKEN_NO加一，表示添加了一条记录
         return encrypted
 
 def token_check(token):#检查token有效性无非3样，token不存在，键值记录的token确已过期，token时间已经过期，如果三种验证都pass了，token就有效
-    init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    TOKEN_ITEM = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('token_no','expired','time_created'),'token',token)
     if TOKEN_ITEM == None :#如果token不存在，抛出异常
         return 'ERROR TOKEN NOT EXIST'
-    elif TOKEN_ITEM[2] == True :
+    elif TOKEN_ITEM[1] == True :
         return 'TOKEN EXPIRED'
-    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+    elif token_is_valid(TOKEN_ITEM[2][:14]):#最复杂的部分，由于数据库时间为16位
         return 'TOKEN TIME INVAID'
     else :
         return 'TOKEN VALID'
@@ -373,17 +384,17 @@ def token_is_valid(token_create_time):#检查TOKEN是否已经过时的函数
         return False
 
 def auth_func(user_id,token):#不打算更改已经写的代码了，这里抄一份改改
-    init = "TOKEN = '" + token + "'"
     user_id = str(user_id)
-    TOKEN_ITEM = SELECT_FUNC('TOKENS',init)
+    token = token.replace(' ','+')
+    TOKEN_ITEM = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('time_created','expired','user_id'),'token',token)
     print(TOKEN_ITEM)
     if TOKEN_ITEM == None :#如果token不存在，抛出异常
         return 'ERROR TOKEN NOT EXIST'
-    elif TOKEN_ITEM[2] == True :
+    elif TOKEN_ITEM[1] == True :
         return 'TOKEN EXPIRED'
-    elif token_is_valid(TOKEN_ITEM[1][:14]):#最复杂的部分，由于数据库时间为16位
+    elif token_is_valid(TOKEN_ITEM[0][:14]):#最复杂的部分，由于数据库时间为16位
         return 'TOKEN TIME INVAID'
-    elif not TOKEN_ITEM[4] == int(user_id):
+    elif not TOKEN_ITEM[2] == int(user_id):
         return 'ID TOKEN NOT MATCH'
     else :
         return 'TOKEN VALID'
@@ -396,16 +407,14 @@ def resolve_visibility(visibility):#返回可见课程的列表组
 
 def totalAuth(user_id , token):#总鉴权函数 根据传入信息决断状态
     token = token.replace(' ','+')
-    init = "TOKEN = '" + token + "'"
-    TOKEN_ITEM = SELECT_FUNC('tokens',init)
+    TOKEN_ITEM = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('user_id'),'token',token)
     check_item = token_check(token)
     if TOKEN_ITEM==None :
         return "TOKEN DOES NOT EXIST"
     elif not check_item == 'TOKEN VALID':
         return "TOKEN INVAILD"
     elif check_item == 'TOKEN VALID':
-        init = "USER_ID = '" + user_id + "'"
-        result = SELECT_FUNC('USERS',init)
+        result = o2lsdb.findByValue('USERS',o2lsdb.makeSelectIndex('user_id','grade'),'user_id',user_id)
         if result == None:
             return "USER_ID INVALID"
         else :

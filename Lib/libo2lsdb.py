@@ -178,11 +178,12 @@ def securitySQL(sql:str):
     flag6 = sql.find('AND')
     flag7 = sql.find('NULL')
     flag8 = sql.find("VERSION")
+    #如果找到则不返回-1
 
-    if not (flag1 or flag2 or flag3 or flag4 or flag5 or flag6) :
-        if not (flag7 or flag8) :
-            return 'Insecure'
-        else:
-            return 0
-    else :
+    if not (flag1==-1 and flag2==-1 and flag3==-1 and flag4==-1 ) :
         return 0
+    elif (flag5==-1 and flag6==-1 and flag7==-1 and flag8==-1):
+        return 0
+    else : 
+        return 'Insecure'
+
