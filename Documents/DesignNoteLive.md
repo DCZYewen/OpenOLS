@@ -1,0 +1,18 @@
+我现在在构想一个合理的直播。
+直播的时候要有一个直播窗口，还要有一个聊天室
+
+前端需要得到的信息是user_id token class_id course_id
+前端请求course_id_list，由后端返回course_id_list，前端根据需要自行fetch_course_by_id。
+大概course_id_list会只返回被管理员设置为visible的课程，这样就能保证不会有过多的数据库查询。
+然后客户端进入一个直播间，调用enter_room，enter_room会报告程序有人进入，用来更新listening人数。
+
+进入后，由于fetch_course_by_id都已经给了前端所有应有的信息，它可以直接请求视频流，（先暂且不管聊天功能），请求url带user_id和token，
+由流服务器向API请求鉴权，如果返回TOKENOK&VISIBLE，则流服务器接受他的请求，开始向他发送视频，若果鉴权失败，就deny了就好。
+
+至于聊天的话可能也会采用另外的服务器，还是相同的，我们的前端请求进入聊天室，然后聊天服务器向主API请求鉴权，通过就进去聊天室，接受它的请求
+并且向他传输消息。如果失败就不叼它。
+
+人观看全程每5s get一个Ping值，每30秒get live_status_update , 更新客户端的直播状态。这个时候都记录到表live_course_log中，生成统计数据，当管理员需要查询统计数据的时候，会检索live_course_log然后生成统计数据，这个时候可以把听课时长不足的老弟查出来。
+生成的统计数据存储在live_statistics表中，当一个课程的统计结果生成后，该节课的所有信息会被从Live_course_log移除。
+
+程序在startup的时候也会运行清除live_course_log的任务，防止数据库爆炸。startup时需要将30天的课程设为invisible。
