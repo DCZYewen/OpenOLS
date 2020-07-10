@@ -1,4 +1,4 @@
-API_URL = "https://o2lsapi.basicws.net"
+API_URL = "https://oolsapi.basicws.net"
 
 function getCookie(cname) {
     var name = cname + "=";
