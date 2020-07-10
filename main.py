@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , Response
+from starlette.requests import Request
 import base64
 import hashlib
 import psycopg2
@@ -11,12 +12,13 @@ import Lib.srs_models as srs_models
 import Lib.libo2lsdb as o2lsdb
 import Lib.libconnect as libconnect
 from pydantic import BaseModel
+import Lib.LiveHtml as LiveHtml
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
 site_url = site_settings.site_url
 api_url = site_settings.api_url
-hash_hey = site_settings.hash_key
+live_url = site_settings.live_url
 flushFlag = False
 
 
@@ -35,10 +37,11 @@ TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
 origins = [
     "http://localhost",
     "http://localhost:8000",
+    "http://10.0.10.3",
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -281,8 +284,6 @@ async def srs_on_connect(json : requestsItemConnect):
 
 @app.post('/srs_on_close')
 async def srs_on_close(json : requestsItemClose):
-    print(json)
-    print("Close")
     return 0
 
 @app.post('/srs_on_publish')
@@ -291,8 +292,6 @@ async def srs_on_publish(json : requestsItemPublish):
 
 @app.post('/srs_on_unpublish')
 async def srs_on_unpublish(json : requestsItemUnpublish):
-    print(json)
-    print("Unpublish")
     return 0
 
 @app.post('/srs_on_play')
@@ -320,10 +319,13 @@ async def srs_on_stop(json : requestsItemStop):
     return 0
 
 @app.post('/srs_on_dvr')
-async def srs_on_dvr(json : requestsItemDvr):
-    print(json)
-    print("Dvr")
+async def srs_on_dvr(json : requestsItemDvr):    
     return 0
+
+@app.get('/live')
+async def live(user_id,token,course_id):
+    return Response(content=LiveHtml.html[0] + live_url + '/live/' + course_id + '?user_id=' + user_id +'&token=' + token + LiveHtml.html[1], media_type="text/html")
+
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
