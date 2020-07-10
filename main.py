@@ -7,6 +7,7 @@ import Lib.site_settings as site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
+import Lib.srs_models as srs_models
 import Lib.libo2lsdb as o2lsdb
 import Lib.libconnect as libconnect
 from pydantic import BaseModel
@@ -44,6 +45,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+requestsItemPublish = srs_models.requestsItemPublish
+requestsItemConnect = srs_models.requestsItemConnect
+requestsItemClose = srs_models.requestsItemClose
+requestsItemUnpublish = srs_models.requestsItemUnpublish
+requestsItemStop = srs_models.requestsItemStop
+requestsItemPlay = srs_models.requestsItemPlay
+requestsItemDvr = srs_models.requestsItemDvr
 
 @app.get("/")#This is for main page
 async def root():
@@ -249,76 +257,25 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
             return("status","course_id_invalid")
     else:
         return("status" , "token_authentication_failure")
-    
-
-##declare some models
-class requestsItemPublish(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    stream: str
-
-class requestsItemConnect(BaseModel):
-    action : str
-    client_id: int
-    ip: str
-    vhost: str
-    app : str
-    tcUrl : str
-    pageUrl: str
-
-class requestsItemClose(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    send_bytes: int 
-    recv_bytes: int
-
-class requestsItemUnpublish(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    stream: str
-
-class requestsItemStop(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    stream: str
-
-class requestsItemPlay(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    stream: str
-    pageUrl: str
-    param: str
-
-class requestsItemDvr(BaseModel):
-    action: str
-    client_id: int
-    ip: str
-    vhost: str
-    app: str
-    stream: str
-    cwd : str
-    file: str
 
 @app.post('/srs_on_connect')
 async def srs_on_connect(json : requestsItemConnect):
-    print(json)
-    print("Connect")
-    return 0
+    print("Trigered")
+    if not json.app == 'live':
+        return 1
+    elif json.tcUrl.find('?') == -1 and json.tcUrl.find('&') == -1:
+        return 2
+    auth_list = json.tcUrl[json.tcUrl.find('?') + 1:len(json.tcUrl)].split('&')
+    auth_dict ={}
+    for tmp in auth_list:
+        tmp2 = tmp.split('=',1)
+        tmp3 = {tmp2[0]:tmp2[1]}
+        auth_dict.update(tmp3)
+    result = totalAuth(auth_dict.get('user_id',None) , auth_dict.get('token',None))
+    if not result == 'TOKEN VALID':
+        return 3
+    else:
+        return 0
 
 @app.post('/srs_on_close')
 async def srs_on_close(json : requestsItemClose):
@@ -328,8 +285,6 @@ async def srs_on_close(json : requestsItemClose):
 
 @app.post('/srs_on_publish')
 async def srs_on_publish(json : requestsItemPublish):
-    print(json)
-    print("Publish")
     return 0
 
 @app.post('/srs_on_unpublish')
@@ -399,7 +354,7 @@ def token_create(user_id,*args):
         if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
-            if o2lsdb.securitySQL(user_id) == 0:
+            if o2lsdb.securitySQL(user_id) == 0 or user_id.isdecimal == True:
                 sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
                 cur.execute(sql)
                 token_user = cur.fetchone()
@@ -513,6 +468,6 @@ def totalAuth(user_id , token):#总鉴权函数 根据传入信息决断状态
         if result == None:
             return "USER_ID INVALID"
         else :
-            return "TOKEN VALID" #useless branch technically nerver executed
+            return "TOKEN VALID"
     else :
         return "FATAL ERROR ENCOUNTERED"
