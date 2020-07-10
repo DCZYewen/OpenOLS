@@ -275,7 +275,11 @@ async def srs_on_connect(json : requestsItemConnect):
     if not result == 'TOKEN VALID':
         return 3
     else:
-        return 0
+        result = o2lsdb.findByValue('TOKENS',o2lsdb.makeSelectIndex('user_id','auth'),'token',auth_dict.get('token',None))
+        if not result[1] == 'TEACHER':
+            return 4
+        else :
+            return 0
 
 @app.post('/srs_on_close')
 async def srs_on_close(json : requestsItemClose):

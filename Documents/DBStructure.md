@@ -3,21 +3,6 @@
 
 ---------------------------------
 
-    pgsql-----DB1-----public
-                        | 
-                        | #tables
-                        |--users
-                        |
-                        |--course
-                        |
-                        |--locations
-                        |
-                        |--resources
-                        |
-                        |--tokens
-
----------------------------------
-
 
 For Table Users
 
@@ -41,9 +26,9 @@ For Table Course
 
 For Table Locations
 
-|COURSE_ID| RTMP_URL     |CHAT_URL     | BOARD_URL            | 
-|---------|--------------|-------------|----------------------|
-|00000001 |rtmp://a.com/1| ws://a.com/1| https://a.com/a.html |
+|COURSE_ID| LIVE_URL            |CHAT_URL     | RECORD_URL           | 
+|---------|---------------------|-------------|----------------------|
+|00000001 | https://a.com/a.flv | ws://a.com/1| https://a.com/a.flv  |
 
 ---------------------------------
 
@@ -60,6 +45,22 @@ For Table Tokens
 |Token_NO| Time_CREATED | EXPIRED | TOKEN     | USER_ID  |AUTH |
 |--------|--------------|---------|-----------|----------|-----|
 |0000001 |20200418220000| False   | 39e9e146c9| 90155664 |admin|
+
+---------------------------------
+
+For Table LiveLog
+
+|COURSE_ID| USER_ID  |EVENT  |TIME           |
+|---------|----------| ----- | ------------- |
+|0000001  | 90155664 |OnClose|20200705205735 |
+
+---------------------------------
+
+For Table Useractivity
+
+| USER_ID  | TIME           | EVENT     | ID        |  TYPE  |
+|----------| -------------- | --------- | --------- | ------ |
+| 90155664 | 20200705205735 | PLAY      | 12364576  | LIVE   |
 
 ---------------------------------
 

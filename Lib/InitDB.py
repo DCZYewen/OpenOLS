@@ -40,11 +40,11 @@ print("Table COURSE created successfully")
 #|COURSE_ID| TITLE           | PEOPLE |VISIBILITY |LISTENING |TIME_START   |TIME_END    | IS_END|
 
 cur.execute("CREATE TABLE LOCATIONS\
-            (COURSE_ID INT PRIMARY KEY NOT NULL,\
-            RTMP_URL  TEXT            NOT NULL,\
-            CHAT_URL  TEXT            NOT NULL,\
-            BOARD_URL TEXT            NOT NULL)")
-#|CLASS_ID| RTMP_URL    |CHAT_URL    | BOARD_URL   | 
+            (COURSE_ID  INT PRIMARY KEY NOT NULL,\
+            LIVE_URL    TEXT            NOT NULL,\
+            CHAT_URL    TEXT            NOT NULL,\
+            RECORD_URL  TEXT            NOT NULL)")
+#|CLASS_ID| LIVE_URL    |CHAT_URL    | RECORD_URL   | 
 print("Table LOCATIONS created successfully")
 
 cur.execute("CREATE TABLE RESOURCES\
@@ -64,7 +64,7 @@ print("Table RESOURCES created successfully")
 
 cur.execute("CREATE TABLE TOKENS\
             (TOKEN_NO    INT PRIMARY KEY NOT NULL,\
-            TIME_CREATED TEXT       NOT NULL,\
+            TIME_CREATED TEXT            NOT NULL,\
             EXPIRED      BOOLEAN         NOT NULL,\
             TOKEN        TEXT            NOT NULL,\
             USER_ID      INT             NOT NULL,\
@@ -72,8 +72,25 @@ cur.execute("CREATE TABLE TOKENS\
 print("Table TOKENS created successfully")
 #|0000001 |20200418220000| False   | 39e9e146c9| 90155664| admin |
 
-conn.commit()
+cur.execute("CREATE TABLE LIVELOG\
+            (COURSE_ID    INT PRIMARY KEY NOT NULL,\
+            USER_ID       INT             NOT NULL,\
+            EVENT         TEXT            NOT NULL,\
+            TIME          TEXT            NOT NULL)")
+print("Table LIVELOG created successfully")
+#|COURSE_ID| USER_ID  |EVENT  |TIME           |
 
+cur.execute("CREATE TABLE LIVELOG\
+            (USER_ID      INT PRIMARY KEY NOT NULL,\
+            TIME          TEXT            NOT NULL,\
+            EVENT         TEXT            NOT NULL,\
+            ID            INT             NOT NULL,\
+            TYPE          TEXT            NOT NULL)")
+print("Table Useractivity created successfully")
+#| USER_ID  | TIME           | EVENT     | ID        |  TYPE  |
+
+
+conn.commit()
 print("Database successfully initiallized")
 
 
@@ -93,25 +110,26 @@ print("Initial key successfully inserted ! ")
 #ADD SUPER USER
 sql1 = "\
     INSERT INTO USERS VALUES(\
-        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , 'ADMIN' , 'admin' , 000000 , '2002020202020200' , '男' , '无' , '无' 
+        99999999 , 'Administrator' , 2099 , 99 , 99999999 , "  + "'" + generate_password_hash('admin') + "'" + ''' , 'ADMIN' , 'admin' , 00000001 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 
 #ADD STU
 sql = "\
     INSERT INTO USERS VALUES(\
-        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 000000 , '2002020202020200' , '男' , '心有猛虎，轻嗅蔷薇。' , '这个男人简直失了智。' 
+        99999998 , 'Test_Stu1' , 2099 , 99 , 99999998 , "  + "'" + generate_password_hash('student1') + "'" + ''' , 'STUDENT' , 'student1' , 00000001 , '2002020202020200' , '男' , '心有猛虎，轻嗅蔷薇。' , '这个男人简直失了智。' 
     )
 '''
 
 #ADD TEACHER
 sql2 = "\
     INSERT INTO USERS VALUES(\
-        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' ,'TEACHER' , 'teacher1' , 000000 , '2002020202020200' , '男' , '无' , '无' 
+        99999997 , 'TEACHER1' , 2099 , 99 , 99999997 , "  + "'" + generate_password_hash('teacher1') + "'" + ''' ,'TEACHER' , 'teacher1' , 00000001 , '2002020202020200' , '男' , '无' , '无' 
     )
 '''
 
-#USER_ID| NAME  | GRADE | CLASS   | CHAT_ID | PASSWD | IS_ONLNE | AUTH | ACCOUNT
+#| USER_ID| NAME  | GRADE | CLASS_ID| CHAT_ID | PASSWD | AUTH   | ACCOUNT|LAST_COURSE|EXIT_TIME     |GENDER |INTRO    |MOTTO    |
+
 cur.execute(sql1)
 cur.execute(sql)
 cur.execute(sql2)
