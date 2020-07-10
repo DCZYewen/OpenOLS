@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import base64
-from Crypto.Cipher import AES
+import hashlib
 import psycopg2
 import sys,string,requests,time,random
 import Lib.site_settings as site_settings
@@ -16,7 +16,6 @@ from pydantic import BaseModel
 tz = 8 #声明时区UTC+8
 site_url = site_settings.site_url
 api_url = site_settings.api_url
-aes_key = site_settings.aes_key
 hash_hey = site_settings.hash_key
 flushFlag = False
 
@@ -260,7 +259,6 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
 
 @app.post('/srs_on_connect')
 async def srs_on_connect(json : requestsItemConnect):
-    print("Trigered")
     if not json.app == 'live':
         return 1
     elif json.tcUrl.find('?') == -1 and json.tcUrl.find('&') == -1:
@@ -299,9 +297,21 @@ async def srs_on_unpublish(json : requestsItemUnpublish):
 
 @app.post('/srs_on_play')
 async def srs_on_play(json : requestsItemPlay):
-    print(json)
-    print("Play")
-    return 0
+    if not json.app == 'live':
+        return 1
+    elif json.param.find('?') == -1 and json.param.find('&') == -1:
+        return 2
+    auth_list = json.param[json.param.find('?') + 1:len(json.param)].split('&')
+    auth_dict ={}
+    for tmp in auth_list:
+        tmp2 = tmp.split('=',1)
+        tmp3 = {tmp2[0]:tmp2[1]}
+        auth_dict.update(tmp3)
+    result = totalAuth(auth_dict.get('user_id',None) , auth_dict.get('token',None))
+    if not result == 'TOKEN VALID':
+        return 3
+    else:
+        return 0
     
 @app.post('/srs_on_stop')
 async def srs_on_stop(json : requestsItemStop):
@@ -342,9 +352,10 @@ def token_create(user_id,*args):
         
         return TOKEN_STRING
 
-    encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
-    while o2lsdb.securitySQL(encrypted) == 'Insecure' or encrypted.find('/'):##it seems that no do .. while loop in python ? and halt '/' as it will have some problem
-        encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
+    encrypted = str(generateMD5(makeTOKEN_STRING(user_id)))
+    print(encrypted)
+    while o2lsdb.securitySQL(encrypted) == 'Insecure' or not encrypted.find('/') == -1:##it seems that no do .. while loop in python ? and halt '/' as it will have some problem
+        encrypted = str(generateMD5(makeTOKEN_STRING(user_id)))
     AUTH = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('auth'),user_id,'user_id')
 
     if AUTH:
@@ -394,29 +405,8 @@ def token_check(token):#检查token有效性无非3样，token不存在，键值
         return 'TOKEN VALID'
 
 
-#This is for AES password encryption and decryption
-def add_to_16(value):
-    while len(value) % 16 != 0:
-        value += '\0'
-    return str.encode(value)  # 返回bytes
-
-def encrypt_oracle(key,password):
-    # 初始化加密器
-    aes = AES.new(add_to_16(key), AES.MODE_ECB)
-    #进行aes加密
-    encrypt_aes = aes.encrypt(add_to_16(password))
-    #用base64转成字符串形式
-    encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8')  # 执行加密并转码返回bytes
-    encrypted_text = encrypted_text[0:len(encrypted_text) - 1]
-    return encrypted_text
-
-def decrypt_oracle(key,encrypted_text):
-    aes = AES.new(add_to_16(key), AES.MODE_ECB)
-    #优先逆向解密base64成bytes
-    base64_decrypted = base64.decodebytes(encrypted_text.encode(encoding='utf-8'))
-    #执行解密密并转码返回str
-    decrypted_text = str(aes.decrypt(base64_decrypted),encoding='utf-8').replace('\0','') 
-    return(decrypted_text)
+def generateMD5(str):
+    return(hashlib.new('md5',str.encode('utf-8')).hexdigest())
 
 def get_time_string():#这是一个获取当前时间字符串格式的函数（精确到秒
     localtime = time.localtime(time.time())
