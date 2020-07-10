@@ -339,7 +339,7 @@ def token_create(user_id,*args):
         return TOKEN_STRING
 
     encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
-    while o2lsdb.securitySQL(encrypted) == 'Insecure':##it seems that no do .. while loop in python ?
+    while o2lsdb.securitySQL(encrypted) == 'Insecure' or encrypted.find('/'):##it seems that no do .. while loop in python ? and halt '/' as it will have some problem
         encrypted = str(encrypt_oracle(aes_key,makeTOKEN_STRING(user_id)))
     AUTH = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('auth'),user_id,'user_id')
 
@@ -354,7 +354,7 @@ def token_create(user_id,*args):
         if check_item == 'ERROR TOKEN NOT EXIST' or check_item == 'TOKEN EXPIRED' or check_item == 'TOKEN TIME INVAID' :#如果传入的token并不存在或者已过期
             return ("info" , "token_authentication_failure")
         else :#如果传入的token和user_id对应
-            if o2lsdb.securitySQL(user_id) == 0 or user_id.isdecimal == True:
+            if o2lsdb.securitySQL(user_id) == 0 or user_id.isdigit == True:
                 sql = "SELECT * FROM TOKENS WHERE USER_ID = '" + user_id + "'" + " ORDER BY TOKEN_NO DESC LIMIT 1 "
                 cur.execute(sql)
                 token_user = cur.fetchone()
