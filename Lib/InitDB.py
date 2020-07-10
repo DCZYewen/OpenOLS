@@ -80,7 +80,7 @@ cur.execute("CREATE TABLE LIVELOG\
 print("Table LIVELOG created successfully")
 #|COURSE_ID| USER_ID  |EVENT  |TIME           |
 
-cur.execute("CREATE TABLE LIVELOG\
+cur.execute("CREATE TABLE USERACTIVITY\
             (USER_ID      INT PRIMARY KEY NOT NULL,\
             TIME          TEXT            NOT NULL,\
             EVENT         TEXT            NOT NULL,\
