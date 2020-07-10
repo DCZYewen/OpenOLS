@@ -25,6 +25,7 @@ flushFlag = False
 #program startups
 app = FastAPI()
 
+
 conn = libconnect.conn
 cur = libconnect.cur
 cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')#写死的SQL 没有风险
