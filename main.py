@@ -7,9 +7,9 @@ import Lib.site_settings as site_settings
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from fastapi.middleware.cors import CORSMiddleware
-import Lib.supervise as supervise
 import Lib.libo2lsdb as o2lsdb
 import Lib.libconnect as libconnect
+from pydantic import BaseModel
 
 #All constants declaration
 tz = 8 #声明时区UTC+8
@@ -29,13 +29,6 @@ cur.execute('SELECT * FROM TOKENS ORDER BY TOKEN_NO DESC LIMIT 1;')#写死的SQL
 global TOKEN_NO
 TOKEN_NO = cur.fetchone()#声明全局变量
 TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
-
-percent = supervise.percent
-per_percent = supervise.per_percent
-logical = supervise.logical_count
-cpus = supervise.cpu_count
-total = supervise.mem.total
-free = supervise.mem.free
 
 
 #接入CORS
@@ -186,11 +179,11 @@ async def mainpage(token: str , user_id: int ):
             return_item = {
                 "status" : "OK",
                 'statistics' : {
-                    "CPUS" : logical,
-                    "Total_Usage" : percent,
-                    "Per_Usage" : per_percent,
-                    "Total_Mem" : total ,
-                    "Free_Mem" : free 
+                    "CPUS" : 12,
+                    "Total_Usage" : 13,
+                    "Per_Usage" : 52,
+                    "Total_Mem" : 23 ,
+                    "Free_Mem" : 23 
                 },
                 'information' : {
                     'name' : USER_ITEM[0],
@@ -258,7 +251,110 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
         return("status" , "token_authentication_failure")
     
 
+##declare some models
+class requestsItemPublish(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    stream: str
 
+class requestsItemConnect(BaseModel):
+    action : str
+    client_id: int
+    ip: str
+    vhost: str
+    app : str
+    tcUrl : str
+    pageUrl: str
+
+class requestsItemClose(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    send_bytes: int 
+    recv_bytes: int
+
+class requestsItemUnpublish(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    stream: str
+
+class requestsItemStop(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    stream: str
+
+class requestsItemPlay(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    stream: str
+    pageUrl: str
+    param: str
+
+class requestsItemDvr(BaseModel):
+    action: str
+    client_id: int
+    ip: str
+    vhost: str
+    app: str
+    stream: str
+    cwd : str
+    file: str
+
+@app.post('/srs_on_connect')
+async def srs_on_connect(json : requestsItemConnect):
+    print(json)
+    print("Connect")
+    return 0
+
+@app.post('/srs_on_close')
+async def srs_on_close(json : requestsItemClose):
+    print(json)
+    print("Close")
+    return 0
+
+@app.post('/srs_on_publish')
+async def srs_on_publish(json : requestsItemPublish):
+    print(json)
+    print("Publish")
+    return 0
+
+@app.post('/srs_on_unpublish')
+async def srs_on_unpublish(json : requestsItemUnpublish):
+    print(json)
+    print("Unpublish")
+    return 0
+
+@app.post('/srs_on_play')
+async def srs_on_play(json : requestsItemPlay):
+    print(json)
+    print("Play")
+    return 0
+    
+@app.post('/srs_on_stop')
+async def srs_on_stop(json : requestsItemStop):
+    print(json)
+    print("Stop")
+    return 0
+
+@app.post('/srs_on_dvr')
+async def srs_on_dvr(json : requestsItemDvr):
+    print(json)
+    print("Dvr")
+    return 0
 
 ##获取前端弱鸡加密过的密码
 def get_real_pass(password,time):
@@ -417,6 +513,6 @@ def totalAuth(user_id , token):#总鉴权函数 根据传入信息决断状态
         if result == None:
             return "USER_ID INVALID"
         else :
-            return "TOKEN VALID"
+            return "TOKEN VALID" #useless branch technically nerver executed
     else :
         return "FATAL ERROR ENCOUNTERED"

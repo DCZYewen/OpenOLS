@@ -1,10 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-	<title>OK</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src='res/jquery.min.js'></script>
+	<script src='res/main.js'></script>
+	<title>OpenOLS管理后台</title>
+
 </head>
 <body>
-	<h1>You are now a Administrator .</h1>
+	<div class="container">
+		<div id='header' >
+			<p>欢迎来到OpenOLS管理后台，您好！管理员。</p>
+			<p>当一个开发者放弃审美的时候，他的产品一定会功能完整，逻辑清晰。——Don. Wo Zehjes Deh</p>
+		</div>
+		<div id='main-frame'>
+			<div id='left' style='background-color:#00B4FF;width:140px;float:left'>
+				<a>人员管理</a><br>
+				<a>课程管理</a><br>
+				<a>服务器管理</a><br>
+				<a>统计信息</a><br>
+				<a>OpenOLS设置</a><br>
+				<a>服务器状态检查</a><br>
+				<a>特别鸣谢</a><br>
+			</div>
+
+			<div id='right' style="float:left;width:600px;background-color:#EEEEEE;">
+				<table id='main-table' border="1">
+					<tr>
+						<th>Header 1</th>
+						<th>Header 2</th>
+						<th>Header 3</th>
+						<th>Header 4</th>
+					</tr>
+					<tr>
+						<td>row 1, cell 1</td>
+						<td>row 1, cell 2</td>
+						<td>row 3, cell 3</td>
+						<td>row 4, cell 4</td>
+					</tr>
+					<tr>
+						<td>row 2, cell 1</td>
+						<td>row 2, cell 2</td>
+					</tr>
+				</table>
+			</div>
+
+			<div id='footer' style="background-color:#b8b8b8;clear:both;text-align:center;width:740px;">
+				<button id='go-right'>查看右边的项目</button>
+				<button id='go-left'>查看左边的项目</button>
+				<button id='go-full-left'>返回最左</button>
+				<button id='next'>下一页</button>
+				<button id='prev'>前一页</button>
+				<button id='go-full-prev'>返回首页</button>
+			</div>
+
+		</div>
+	</div>
 </body>
 </html>
