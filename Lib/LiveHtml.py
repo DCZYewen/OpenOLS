@@ -64,6 +64,7 @@ html = ['''<!DOCTYPE HTML>
 					<script>
 						function gotoMain(){
 							window.location.replace("https://openols.basicws.net/web/Student/");
+                                                        }
 					</script>
 				</div>
 			</div>
