@@ -16,7 +16,9 @@ function setCourceName(token, userid, courseid) { // This func works but shitty.
 
     $.get(url,function callback(data){
         if (data.status == 'OK'){
-            document.getElementById("last_class").innerHTML = data.title
+			init = API_URL + '/live?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+			html = '<a href="' + init + '">' + data.title + '</a>
+            document.getElementById("last_class").innerHTML = html
         }
         else{
             alert("获取课程信息失败！");
