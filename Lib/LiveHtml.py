@@ -1,34 +1,87 @@
 #http://10.0.10.51:8080/live/jiangxu.flv?user_id=99999998&token=2f49ccee30a915239cfb7942062f347f
-html = ['''<!DOCTYPE html>
+html = ['''<!DOCTYPE HTML>
 <html>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="IE=edge" >
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
-<title>Aliplayer Online Settings</title>
-<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.8/skins/default/aliplayer-min.css" />
-<script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.8/aliplayer-min.js"></script>
-</head>
-<body>
-<div class="prism-player" id="player-con"></div>
-<script>
-var player = new Aliplayer({
-  "id": "player-con",
-  "source": "''' , '''",
-  "width": "100%",
-  "height": "500px",
-  "autoplay": true,
-  "isLive": true,
-  "rePlay": false,
-  "playsinline": true,
-  "preload": true,
-  "enableStashBufferForFlv": true,
-  "stashInitialSizeForFlv": 32,
-  "controlBarVisibility": "hover",
-  "useH5Prism": true
-}, function (player) {
-    console.log("The player is created");
-  }
-);
-</script>
-</body>''']
+    <head>
+		<head>    
+		<meta charset="UTF-8">
+		<title>Bootstrap引入</title>
+		<!-- 新 Bootstrap 核心 CSS 文件 -->  
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">  
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->  
+		<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>  
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->  
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		
+		<meta http-equiv="x-ua-compatible" content="IE=edge" >
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+		<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.8/skins/default/aliplayer-min.css" />
+		<script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.8/aliplayer-min.js"></script>
+		
+		</head>
+    </head>
+    <body>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-11">
+					<h2>测试直播间</h2>
+				</div>
+				<div class="col-md-1">
+					<button type="button" class="btn btn-success" onclick="gotoMain();">
+						返回主页
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="prism-player" id="player-con"></div>
+					<script>
+					var player = new Aliplayer({
+					  "id": "player-con",
+					  "source": "''' , '''",
+					  "width": "80%",
+					  "height": "500px",
+					  "autoplay": true,
+					  "isLive": true,
+					  "rePlay": false,
+					  "playsinline": true,
+					  "preload": true,
+					  "enableStashBufferForFlv": true,
+					  "stashInitialSizeForFlv": 32,
+					  "controlBarVisibility": "hover",
+					  "useH5Prism": true
+					}, function (player) {
+						console.log("The player is created");
+					  }
+					);
+					</script>
+					<script>
+						function gotoMain(){
+							window.location.replace("https://openols.basicws.net/web/Student/");
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+    </body>
+</html>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-11">
+				</div>
+				<div class="col-md-1">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>''']
+

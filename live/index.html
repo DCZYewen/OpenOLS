@@ -1,53 +1,85 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>liveplayer</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
-        <!-- 引用 liveplayer-element.min.js -->
-        <script type="text/javascript" src="liveplayer-element.min.js"></script>
+		<head>    
+		<meta charset="UTF-8">
+		<title>Bootstrap引入</title>
+		<!-- 新 Bootstrap 核心 CSS 文件 -->  
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">  
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->  
+		<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>  
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->  
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		
+		<meta http-equiv="x-ua-compatible" content="IE=edge" >
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+		<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.8/skins/default/aliplayer-min.css" />
+		<script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.8/aliplayer-min.js"></script>
+		
+		</head>
     </head>
     <body>
-        <live-player video-url="http://10.0.10.51:8080/live/jiangxu.flv?user_id=99999998&token=2f49ccee30a915239cfb7942062f347f" live="true" stretch="true"></live-player>
-
-        <script>
-            // JavaScript 交互示例, 需要将页面代码放到 http web server 容器下, 通过浏览器 http 协议访问
-            var player = document.getElementById('player01');
-            player.addEventListener('snapOutside', evt => {
-                console.log('获取快照 base64 数据', evt.detail[0]);
-            });
-            setTimeout(() => {
-                console.log("快照, 回调 snapOutside...");
-                player.getVueInstance().snap();
-                console.log("静音...");
-                player.getVueInstance().setMuted(true);
-                console.log("静音状态: " + player.getVueInstance().getMuted());
-                console.log("暂停...");
-                player.getVueInstance().pause();
-                console.log("暂停状态: " + player.getVueInstance().paused());
-                console.log("全屏状态: " + player.getVueInstance().isFullscreen());
-                //触发全屏, 需要放置到交互事件回调中
-                //btn.onclick = () => { player.getVueInstance().requestFullscreen(); }
-                player.getVueInstance().setMuted(false);
-                console.log("音量: " + player.getVueInstance().getVolume());
-                player.getVueInstance().setVolume(0.5);
-                console.log("音量1: " + player.getVueInstance().getVolume());
-                player.getVueInstance().setVolume(0.3);
-                console.log("音量2: " + player.getVueInstance().getVolume());
-            }, 3000);
-            setTimeout(() => {
-                console.log("放音...");
-                player.getVueInstance().setMuted(false);
-                console.log("静音状态: " + player.getVueInstance().getMuted());
-                console.log("播放...");
-                player.getVueInstance().play();
-                console.log("暂停状态: " + player.getVueInstance().paused());
-            }, 6000);
-            setTimeout(() => {
-                console.log("切换媒体源...");
-                player.setAttribute("video-url", "http://10.0.10.51:8080/live/jiangxu.flv?user_id=99999998&token=2f49ccee30a915239cfb7942062f347f");
-            }, 9000);
-        </script>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-11">
+					<h2>测试直播间</h2>
+				</div>
+				<div class="col-md-1">
+					<button type="button" class="btn btn-success" onclick="gotoMain();">
+						返回主页
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="prism-player" id="player-con"></div>
+					<script>
+					var player = new Aliplayer({
+					  "id": "player-con",
+					  "source": "''' , '''",
+					  "width": "80%",
+					  "height": "500px",
+					  "autoplay": true,
+					  "isLive": true,
+					  "rePlay": false,
+					  "playsinline": true,
+					  "preload": true,
+					  "enableStashBufferForFlv": true,
+					  "stashInitialSizeForFlv": 32,
+					  "controlBarVisibility": "hover",
+					  "useH5Prism": true
+					}, function (player) {
+						console.log("The player is created");
+					  }
+					);
+					</script>
+					<script>
+						function gotoMain(){
+							window.location.replace("https://openols.basicws.net/web/Student/");
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
     </body>
 </html>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-11">
+				</div>
+				<div class="col-md-1">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
