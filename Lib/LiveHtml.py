@@ -141,7 +141,7 @@ mobileHTML= ['''<!DOCTYPE HTML>
                     var flv = new FlvPlayer({
                         container: '.flvplayer-app',
                         poster: './assets/img/weathering-with-you-poster.jpg',
-                        url: '''' , '''',
+                        url: ' ''' , ''' ',
                         decoder: 'https://boyinthesun.cn/others/flvplayer-decoder-baseline.js',
                         // decoder: './uncompiled/flvplayer-decoder-multiple.js',
                         debug: true,
@@ -156,8 +156,8 @@ mobileHTML= ['''<!DOCTYPE HTML>
                         maxTimeDiff: 200,
                         videoChunk: 1024 * 1024,
                         audioChunk: 64 * 1024,
-                        width: 800,
-                        height: 360,
+                        width:1280,
+                        height:720,
                     });</script>
                     
 					<script>
