@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>OpenOLS</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+	<!-- 新 Bootstrap 核心 CSS 文件 -->  
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">  
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->  
+	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>  
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->  
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	
+	<script src="./assets/js/handle.js"></script>
+    <script src="./assets/js/api.js"></script>
+    <script src="./assets/js/jquery-1.8.0.js"></script>
+    <script src="./assets/js/jquery.cookie-1.4.1.min.js"></script> 
+	
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							#
+						</th>
+						<th>
+							状态
+						</th>
+						<th>
+							时间
+						</th>
+						<th>
+							UP
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							1
+						</td>
+						<td id="pc">
+							PC端直播课堂测试
+						</td>
+						<td>
+							01/04/2012
+						</td>
+						<td>
+							Default
+						</td>
+					</tr>
+					<tr class="table-active">
+						<td>
+							1
+						</td>
+						<td id="mobile">
+							移动端直播课堂测试
+						</td>
+						<td>
+							01/04/2012
+						</td>
+						<td>
+							Default
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td>
+							2
+						</td>
+						<td>
+							李子豪Gemini
+						</td>
+						<td>
+							02/04/2012
+						</td>
+						<td>
+							Denied
+						</td>
+					</tr>
+					<tr class="table-warning">
+						<td>
+							3
+						</td>
+						<td>
+							Load Balancing
+						</td>
+						<td>
+							03/04/2012
+						</td>
+						<td>
+							Pending
+						</td>
+					</tr>
+					<tr class="table-danger">
+						<td>
+							4
+						</td>
+						<td>
+							Status Check UP MULTICAST
+						</td>
+						<td>
+							04/04/2012
+						</td>
+						<td>
+							Denied
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<script>
+			function pend(){
+				var Token = getCookie("token");
+				var User_Id = getCookie("user_id");
+				setCourseName(Token ,User_Id ,1 , "pc");
+				setCourseName(Token ,User_Id ,2 , "mobile");
+				
+			};
+			function setCourseName(token, userid, courseid ,elem ) { // This func works but shitty. - mzWyt
+				var url = API_URL + '/fetch_course_by_id/?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+				var init = API_URL + '/live?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+				var html = '<a href="' + init + '">'
+				$.get(url,function callback(data){
+					if (data.status == 'OK'){
+						document.getElementById(elem).innerHTML = html + data.title + '</a>';
+					}
+					else{
+						alert("获取课程信息失败！");
+					}
+				});
+			};
+			</script>
+		</div>
+	</div>
+</div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+  </body>
+</html>
