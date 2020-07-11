@@ -5,6 +5,7 @@ html = ['''<!DOCTYPE HTML>
 		<head>    
 		<meta charset="UTF-8">
 		<title>Bootstrap引入</title>
+	
     <!-- 新 Bootstrap4 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
     
@@ -96,12 +97,18 @@ mobileHTML= ['''<!DOCTYPE HTML>
 		<head>    
 		<meta charset="UTF-8">
 		<title>移动端直播间测试</title>
-		<!-- 新 Bootstrap 核心 CSS 文件 -->  
-		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">  
-		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->  
-		<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>  
-		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->  
-		<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+		<!-- 新 Bootstrap4 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+		
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+		<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+		
+		<!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+		<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+		
+		<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 		
 		<meta http-equiv="x-ua-compatible" content="IE=edge" >
 		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
