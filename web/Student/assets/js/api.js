@@ -13,11 +13,10 @@ function getCookie(cname) {
 function setCourceName(token, userid, courseid) { // This func works but shitty. - mzWyt
     
     var url = API_URL + '/fetch_course_by_id/?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
-
+	var init = API_URL + '/live?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+	var html = '<a href="' + init + '">' + data.title + '</a>
     $.get(url,function callback(data){
         if (data.status == 'OK'){
-			init = API_URL + '/live?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
-			html = '<a href="' + init + '">' + data.title + '</a>
             document.getElementById("last_class").innerHTML = html
         }
         else{
