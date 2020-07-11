@@ -338,7 +338,7 @@ async def live(user_id,token,course_id):
 
 @app.get('/mobilelive')
 async def mobilelive(user_id,token,course_id):
-    return Response(content=LiveHtml.html[0] + live_url + '/live/' + course_id + '.flv?user_id=' + user_id +'&token=' + token + LiveHtml.html[1], media_type="text/html")
+    return Response(content=LiveHtml.mobileHTML[0] + live_url + '/live/' + course_id + '.flv?user_id=' + user_id +'&token=' + token + LiveHtml.mobileHTML[1], media_type="text/html")
 
 
 ##获取前端弱鸡加密过的密码
