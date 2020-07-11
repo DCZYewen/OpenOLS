@@ -90,3 +90,80 @@ html = ['''<!DOCTYPE HTML>
 	</div>
 </div>''']
 
+mobileHTML= ['''<!DOCTYPE HTML>
+<html>
+    <head>
+		<head>    
+		<meta charset="UTF-8">
+		<title>移动端直播间测试</title>
+		<!-- 新 Bootstrap 核心 CSS 文件 -->  
+		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">  
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->  
+		<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>  
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->  
+		<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		
+		<meta http-equiv="x-ua-compatible" content="IE=edge" >
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+
+        <script src="https://boyinthesun.cn/others/flvplayer.js"></script>
+        <script src="https://boyinthesun.cn/others/flvplayer-control.js"></script>
+        
+		</head>
+    </head>
+    <body>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-11">
+					<h2>移动端测试直播间</h2>
+				</div>
+				<div class="col-md-1">
+					<button type="button" class="btn btn-success" onclick="gotoMain();">
+						返回主页
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+                    <div class="flvplayer-app"></div>
+
+                    <script>
+                    var flv = new FlvPlayer({
+                        container: '.flvplayer-app',
+                        poster: './assets/img/weathering-with-you-poster.jpg',
+                        url: '''' , '''',
+                        decoder: 'https://boyinthesun.cn/others/flvplayer-decoder-baseline.js',
+                        // decoder: './uncompiled/flvplayer-decoder-multiple.js',
+                        debug: true,
+                        live: true,
+                        loop: true,
+                        autoPlay: true,
+                        hasAudio: true,
+                        control: true,
+                        muted: false,
+                        volume: 0.7,
+                        frameRate: 30,
+                        maxTimeDiff: 200,
+                        videoChunk: 1024 * 1024,
+                        audioChunk: 64 * 1024,
+                        width: 800,
+                        height: 360,
+                    });</script>
+                    
+					<script>
+						function gotoMain(){
+							window.location.replace("https://openols.basicws.net/web/Student/");
+                        }
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+    </body>
+</html>
+
+'''
+]
