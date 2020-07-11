@@ -54,7 +54,7 @@ function load_mainpage_info() {
     }
 
     var url = API_URL + '/mainpage/?user_id=' + User_Id + '&token=' + Token;
-
+    console.log(url)
     $.get(url,function callback(data){
         if (data.status == 'OK'){
             document.getElementById("stu_name").innerHTML = data.information.name;

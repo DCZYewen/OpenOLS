@@ -38,7 +38,7 @@ TOKEN_NO = TOKEN_NO[0]#你可能会笑我 但是我就这么写了
 origins = [
     "http://localhost",
     "http://localhost:8000",
-    "http://10.0.10.3",
+    "https://openols.basicws.net",
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -71,6 +71,7 @@ async def ping():
 @app.get("/login/")
 async def read_item(username: str , password: str, time: str): #这里是登录API,主要实现功能是客户端点击login将get http://site.com/login/?username=2&password=2&time=200303031211
     #user_information = {"username": username,"password": password,"time":str}
+
     #进入登录验证部分
     real_pass = get_real_pass(password,time)
 
@@ -290,8 +291,9 @@ async def srs_on_close(json : requestsItemClose):
 
 @app.post('/srs_on_publish')
 async def srs_on_publish(json : requestsItemPublish):
-    result = o2lsdb.findByValue('COURSES',o2lsdb.makeSelectIndex('course_id','is_end'),'course_id',str(json.stream))
-    if not result[1] == False:
+    result = o2lsdb.findByValue('COURSE',o2lsdb.makeSelectIndex('course_id','is_end'),'course_id',str(json.stream))
+    print(result)
+    if result[1] == False:
         return 0
     elif result == None:
         return 1
@@ -332,7 +334,7 @@ async def srs_on_dvr(json : requestsItemDvr):
 
 @app.get('/live')
 async def live(user_id,token,course_id):
-    return Response(content=LiveHtml.html[0] + live_url + '/live/' + course_id + '?user_id=' + user_id +'&token=' + token + LiveHtml.html[1], media_type="text/html")
+    return Response(content=LiveHtml.html[0] + live_url + '/live/' + course_id + '.flv?user_id=' + user_id +'&token=' + token + LiveHtml.html[1], media_type="text/html")
 
 
 ##获取前端弱鸡加密过的密码
