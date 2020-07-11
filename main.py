@@ -228,13 +228,14 @@ async def fetch_course_by_id(token: str , user_id: int , course_id : int):
     if result == "TOKEN VALID":
         result = o2lsdb.selectByID('USERS',o2lsdb.makeSelectLine('class_id'),user_id,'user_id')
         class_id = str(result[0])
-
+        print(class_id)
         result = o2lsdb.selectByID('COURSE',o2lsdb.makeSelectLine('visibility','title','people','listening','time_start','time_end','is_end'),course_id,'course_id')
 
         if not result == None:
             visibleFlag = False
+            print(result)
             visibility = resolve_visibility(result[0])
-
+            print(visibility)
             for item in visibility:
                 if str(item) == class_id:
                     visibleFlag = True
@@ -281,7 +282,13 @@ async def srs_on_connect(json : requestsItemConnect):
         if not result[1] == 'TEACHER':
             return 4
         else :
-            return 0
+            result = o2lsdb.findByValue('COURSES',o2lsdb.makeSelectIndex('course_id','is_end'),'course_id',str(json.stream))
+            if not result[1] == False:
+                return 0
+            elif result == None:
+                return 5
+            else:
+                return 6
 
 @app.post('/srs_on_close')
 async def srs_on_close(json : requestsItemClose):
