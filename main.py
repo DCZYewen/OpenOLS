@@ -282,13 +282,7 @@ async def srs_on_connect(json : requestsItemConnect):
         if not result[1] == 'TEACHER':
             return 4
         else :
-            result = o2lsdb.findByValue('COURSES',o2lsdb.makeSelectIndex('course_id','is_end'),'course_id',str(json.stream))
-            if not result[1] == False:
-                return 0
-            elif result == None:
-                return 5
-            else:
-                return 6
+            return 0
 
 @app.post('/srs_on_close')
 async def srs_on_close(json : requestsItemClose):
@@ -296,7 +290,13 @@ async def srs_on_close(json : requestsItemClose):
 
 @app.post('/srs_on_publish')
 async def srs_on_publish(json : requestsItemPublish):
-    return 0
+    result = o2lsdb.findByValue('COURSES',o2lsdb.makeSelectIndex('course_id','is_end'),'course_id',str(json.stream))
+    if not result[1] == False:
+        return 0
+    elif result == None:
+        return 1
+    else:
+        return 2
 
 @app.post('/srs_on_unpublish')
 async def srs_on_unpublish(json : requestsItemUnpublish):
