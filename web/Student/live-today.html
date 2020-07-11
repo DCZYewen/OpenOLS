@@ -136,7 +136,12 @@
 			};
 			function setCourseName(token, userid, courseid ,elem ) { // This func works but shitty. - mzWyt
 				var url = API_URL + '/fetch_course_by_id/?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+				if (elem == "pc"){
 				var init = API_URL + '/live?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+				}
+				else{
+					var init = API_URL + '/mobilelive?user_id=' + userid + '&token=' + token + '&course_id=' + courseid;
+				}
 				var html = '<a href="' + init + '">'
 				$.get(url,function callback(data){
 					if (data.status == 'OK'){
